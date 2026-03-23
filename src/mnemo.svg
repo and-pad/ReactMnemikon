@@ -1,0 +1,64 @@
+<svg
+   width="32.971581mm"
+   height="33.431068mm"
+   viewBox="0 0 32.971581 33.431068"
+   version="1.1"
+   id="svg1"
+   xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <rect
+       x="30.126316"
+       y="146.89691"
+       width="103.57477"
+       height="73.199478"
+       id="rect2" />
+    <linearGradient
+       id="swatch1">
+      <stop
+         style="stop-color:#000000;stop-opacity:1;"
+         offset="0"
+         id="stop1" />
+    </linearGradient>
+    <rect
+       x="30.126316"
+       y="146.89691"
+       width="103.57477"
+       height="73.199478"
+       id="rect2-1" />
+  </defs>
+  <g
+     id="layer1"
+     transform="translate(-135.78423,-201.19004)">
+    <ellipse
+       style="fill:#a8dcff;fill-opacity:1;stroke:#1b00ff;stroke-width:2.34066;stroke-linecap:round;stroke-linejoin:bevel;stroke-dasharray:none;stroke-opacity:1"
+       id="path4"
+       cx="152.21957"
+       cy="217.90558"
+       rx="15.26503"
+       ry="15.545206" />
+    <text
+       xml:space="preserve"
+       transform="matrix(2.2164918,0,0,1.1433436,77.038178,37.758978)"
+       id="text2"
+       style="font-size:9.03485px;white-space:pre;shape-inside:url(#rect2);display:inline;fill:#ff0004;fill-opacity:1;stroke:#ff0004;stroke-width:0.640265;stroke-dasharray:none;stroke-opacity:1">
+      <tspan
+         x="30.126953"
+         y="155.13925"
+         id="tspan2">M</tspan>
+    </text>
+    <text
+       xml:space="preserve"
+       transform="matrix(2.2164918,0,0,1.1433436,77.708754,50.826915)"
+       id="text2-7"
+       style="font-size:9.03485px;white-space:pre;shape-inside:url(#rect2-1);display:inline;fill:#ff0004;fill-opacity:1;stroke:#ff0004;stroke-width:0.640265;stroke-dasharray:none;stroke-opacity:1">
+      <tspan
+         x="30.126953"
+         y="155.13925"
+         id="tspan3">N</tspan>
+    </text>
+    <path
+       style="fill:#ff00e6;fill-opacity:0.346847;stroke:#06050a;stroke-width:2.54235;stroke-linecap:round;stroke-linejoin:bevel;stroke-dasharray:none;stroke-opacity:1"
+       d="m 137.16806,217.71376 30.31656,-0.16538"
+       id="path5" />
+  </g>
+</svg>

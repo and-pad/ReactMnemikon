@@ -1,0 +1,23 @@
+.frameThmb {
+    border: 1px solid #3f3f3f;
+    /* Borde sólido con color gris */
+    border-radius: 7px;
+    /* Esquinas redondeadas */
+    padding: 3px;
+    /* Reducimos el espacio interior */
+    max-width: 100px;
+    /* Ancho máximo */
+    display: inline-block;
+    /* Para ajustar el tamaño al contenido */
+    background-color: #c7c7c7;
+    /* Color de fondo gris suave */
+}
+
+.frameThmb img {
+    border-radius: 4px;
+    /* Esquinas redondeadas para la imagen */
+    width: 100%;
+    /* Para que la imagen llene todo el espacio disponible */
+    height: auto;
+    /* Altura automática */
+}

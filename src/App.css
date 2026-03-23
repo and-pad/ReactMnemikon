@@ -1,0 +1,65 @@
+/* App.css */
+
+/* Estilos generales de la aplicación */
+.App {
+  text-align: center;
+}
+
+/* Logo de la aplicación */
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+/* Animación del logo */
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+/* Encabezado de la aplicación */
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+/* Enlaces de la aplicación */
+.App-link {
+  color: #61dafb;
+}
+
+/* Animación del logo */
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Estilos para el componente PiecesQueries */
+/*.PiecesQueries-container {
+
+  padding: 20px;
+  width: 100%;
+  /* height: 100vh;*/
+/*}*/
+
+
+
+
+.rdt_Table {
+   width: 100%;
+  /* La tabla ocupará el 100% del ancho del contenedor padre */
+   table-layout: fixed;
+  /* Fuerza que el ancho de la tabla sea fijo */
+}

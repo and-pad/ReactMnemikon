@@ -1,0 +1,19 @@
+.modal-content {
+    position: relative;
+}
+.btn-close {
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+
+.link-like {
+    cursor: pointer;
+    color: #007bff; /* Color azul de enlace */
+    text-decoration: underline;
+}
+
+.link-like:hover {
+    color: #0056b3; /* Color azul oscuro al pasar el ratón */
+}

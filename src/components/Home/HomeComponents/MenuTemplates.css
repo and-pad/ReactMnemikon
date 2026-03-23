@@ -1,0 +1,165 @@
+body,
+html {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background-color: #777777 !important;
+}
+
+.top-navbar {
+    background-color: rgba(0, 80, 133, 0.712);
+    /*color: white;*/
+    height: 50px;
+    /* Altura de la barra de navegación superior */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    box-shadow: 0 0.5rem 1rem rgba(255, 255, 255, 0.15) !important;
+    border-bottom: 5px double #23003f;
+    /* Agrega un borde inferior de 2px sólido blanco */
+}
+
+.top-navbar-user button {
+    background-color: transparent;
+    border: none;
+    color: white;
+    font-size: 1.5em;
+}
+
+.containers {
+    display: flex;
+    /* min-height: calc(100vh - 60px);
+    /* Se ajusta para excluir la altura de la barra de navegación superior */
+}
+
+.sidebar {
+    position: relative;
+    /* Añadir posición relativa */
+    width: 235px;
+    /*min-width: 44px;*/
+    background-color: #5C7287;
+    padding-top: 37px;
+    transition: width 0.6s ease-in;
+    box-shadow: 0 0.5rem 1rem rgba(255, 255, 255, 0.397) !important;
+    height: 100vh;
+
+    /* Añade una transición de 0.3 segundos */
+}
+
+.sidebar.collapsed {
+    width: 46px;
+    height: 100vh;
+    /* Define el ancho retraído */
+}
+
+/*.sidebar.collapsed ul li a {*/
+.sidebar.collapsed ul li:hover a {
+
+    display: flex;
+    background-color: rgb(47, 153, 153);
+    padding-top: 9px;
+    padding-bottom: 10px;
+    padding-right: 110px;
+    padding-left: 15px;
+    position: absolute;
+    left: 44px;
+    bottom: 0px;
+    opacity: 1;
+    height: 100vh;
+
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar ul li {
+    display: inline-flex;
+    padding-bottom: 11px;
+    padding-left: 7px;
+    padding-top: 11px;
+    /* margin-right: 7px;
+    margin-left: 8px;*/
+    transition: opacity 0.5s ease, background-color 0.5s;
+    font-size: larger;
+
+
+}
+
+.elementsgroup li,
+.elementsgroup li ul li {
+    width: 100%;
+    position: relative;
+    display: block;
+}
+
+.elementsgroup li ul {
+    display: none;
+    position: absolute;
+    left: 44px;
+    top: 0px;
+}
+
+
+.sidebar li:hover {
+    background-color: rgb(47, 153, 153);
+}
+
+.sidebar ul li a {
+
+    text-decoration: none;
+    color: rgb(172, 255, 255);
+    /*transition: display 0.4s ease-in;*/
+    display: block;
+    /*margin-right: 35mm;*/
+}
+
+.sidebar.collapsed ul li a {
+
+    display: none;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+
+}
+
+.sidebar ul li i {
+    /* color: rgb(55, 0, 77);*/
+    color: rgb(102, 12, 31);
+    margin-right: 32px;
+    font-size: 25px;
+}
+
+.sidebar button {
+    position: absolute;
+    top: 4px;
+    right: 0;
+    width: 18px;
+    height: 30px;
+    background-color: #3a3a3a3f;
+    border: none;
+    color: white;
+    border-radius: 15px;
+    transition: background-color, 0.5s;
+    padding-top: 2px;
+    padding-left: 3px;
+    padding-right: 4px;
+
+}
+
+.sidebar button:hover {
+    background-color: #3a3a3ab2;
+
+
+}
+
+.sidebar button i {
+    transition: transform, 0.5s;
+    transform: rotate(0deg);
+
+}
+
+.sidebar.collapsed button i {
+    transform: rotate(180deg);
+}
