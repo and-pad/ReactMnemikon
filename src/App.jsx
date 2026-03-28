@@ -314,7 +314,7 @@ function App() {
           {...RestorationEdit_select({ accessToken, refreshToken, handleCheckLoginCallback })}
           {...RestorationNew({ accessToken, refreshToken, permissions, handleCheckLoginCallback })}
           {...RestorationQueriesActions({ accessToken, refreshToken, permissions, handleCheckLoginCallback })}
-          {...Movements({ accessToken, refreshToken, handleCheckLoginCallback })}
+          {...Movements({ accessToken, refreshToken, permissions, handleCheckLoginCallback })}
           
           {...AdmUserManage({ accessToken, refreshToken, handleCheckLoginCallback })}
 

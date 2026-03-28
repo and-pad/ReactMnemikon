@@ -3,7 +3,7 @@ import PrivateRoute from "../components/PrivateRouteComponent";
 import { MovementsManage }from "../components/Movements/MovementsManage";
 
 
-export function Movements({ accessToken, refreshToken, handleCheckLoginCallback }) {
+export function Movements({ accessToken, refreshToken, permissions, handleCheckLoginCallback }) {
   return [
     <Route
       key="movements"
@@ -13,6 +13,7 @@ export function Movements({ accessToken, refreshToken, handleCheckLoginCallback 
           element={<MovementsManage 
             accessToken={accessToken}
             refreshToken={refreshToken}
+            permissions={permissions}
 
              />             
           }
