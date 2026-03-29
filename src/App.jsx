@@ -1,15 +1,13 @@
 import Cookies from "js-cookie"; //Librería para el manejo de cookies
 import { useState, useEffect } from "react"; //react, y sus componentes
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"; //Componentes de rutas de react de single page
+import { RouterProvider } from "react-router-dom"; //Componentes de rutas de react de single page
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min";
 
 import "./App.css";
-import { TopNavBar } from "./components/Home/HomeComponents/MenuTemplates"; //Plantilla principal de la pagina
 
 //import Login from "./components/LoginComponents/Login"; //Componente del Login
-import PrivateRoute from "./components/PrivateRouteComponent"; // Importa el componente PrivateRoute para el acceso con contraseña
 import {
   handleLogin,
   handleLoggedTime,
@@ -24,29 +22,8 @@ import "@fortawesome/fontawesome-free/css/all.min.css"; //FontAwesome!!
 
 import { delCache } from "./components/Datatables/dataHandler";
 
-
-
-
-// Importación de las rutas
-import { AuthRoutes } from "./routes/AuthRoutes";
-import { Start } from "./routes/StartRoutes";
-import { PieceQueries } from "./routes/PieceQueriesRoutes";
-import { PieceQueriesDetail } from "./routes/PieceQueriesDetailRoutes";
-import { InventoryQueries } from "./routes/InventoryQueriesRoutes";
-import { InventoryQueriesActions } from "./routes/InventoryQueriesActionsRoutes";
-import { ResearchQueries } from "./routes/ResearchQueriesRoutes";
-import { ResearchQueriesActions } from "./routes/ResearchQueriesActionsRoutes";
-import { RestorationQueries } from "./routes/RestorationQueriesRoutes";
-import { RestorationEdit_select } from "./routes/RestorationsEditSelectRoutes";
-import { RestorationQueriesActions } from "./routes/RestorationQueriesActionsRoutes";
-import { AdmUserManage } from "./routes/AdministrationUserManagerRoutes";
-import { PiecesPendingList } from "./routes/PiecesPendingListRoutes";
-import { RestorationNew } from "./routes/RestorationNewRoutes";
-import { Movements } from "./routes/MovementsRoutes";
-
-
-
-const SearchPage = () => <h6>Home Page :-0</h6>;
+import { appRouter } from "./routes/AppRouter";
+import { RouteContextProvider } from "./routes/RouteContext";
 
 function App() {
   //Variables para manejar el inicio de sesion tokenizado
@@ -282,52 +259,24 @@ function App() {
     }
   };
 
+  const routeContextValue = {
+    handleLoginCallback,
+    accessToken,
+    setAccessToken,
+    refreshToken,
+    permissions,
+    user,
+    handleLogout,
+    handleCheckLoginCallback,
+  };
+
   return (
-  <div className="App">
-    <BrowserRouter>
-      <Routes>
-        {/* Rutas de autenticación */}
-        {AuthRoutes({ handleLoginCallback, accessToken, setAccessToken })}
-
-        {/* Layout principal */}
-        <Route
-          path="/mnemosine"
-          element={
-            <TopNavBar
-              user={user}
-              permissions={permissions}
-              handleLogout={handleLogout}
-            />
-          }
-        >
-          {/* Rutas hijas dentro del layout */}
-          
-          {...Start({ accessToken, refreshToken, handleCheckLoginCallback })}
-          {...PieceQueries({ accessToken, refreshToken, permissions, handleCheckLoginCallback })}          
-          {...PiecesPendingList({ accessToken, refreshToken, permissions, handleCheckLoginCallback })}
-          {...ResearchQueries({ accessToken, refreshToken, permissions, handleCheckLoginCallback })}
-          {...PieceQueriesDetail({ accessToken, refreshToken, handleCheckLoginCallback })}
-          {...InventoryQueries({ accessToken, refreshToken, permissions, handleCheckLoginCallback })}
-          {...InventoryQueriesActions({ accessToken, refreshToken, permissions, handleCheckLoginCallback })}
-          {...ResearchQueriesActions({ accessToken, refreshToken, permissions, handleCheckLoginCallback })}
-          {...RestorationQueries({ accessToken, refreshToken, permissions, handleCheckLoginCallback })}
-          {...RestorationEdit_select({ accessToken, refreshToken, handleCheckLoginCallback })}
-          {...RestorationNew({ accessToken, refreshToken, permissions, handleCheckLoginCallback })}
-          {...RestorationQueriesActions({ accessToken, refreshToken, permissions, handleCheckLoginCallback })}
-          {...Movements({ accessToken, refreshToken, permissions, handleCheckLoginCallback })}
-          
-          {...AdmUserManage({ accessToken, refreshToken, handleCheckLoginCallback })}
-
-          
-        </Route>
-
-        {/* Rutas fuera del layout */}
-        <Route path="/test/" element={<SearchPage />} />
-      </Routes>
-    </BrowserRouter>
-  </div>
-);
-
+    <div className="App">
+      <RouteContextProvider value={routeContextValue}>
+        <RouterProvider router={appRouter} />
+      </RouteContextProvider>
+    </div>
+  );
 }
 /*
 { redirectDetail && <Navigate to={`/piece_queries/detail/${encodeURIComponent(Row)}`} /> }*/

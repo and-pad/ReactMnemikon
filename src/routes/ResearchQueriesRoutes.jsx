@@ -1,33 +1,14 @@
-import { Route } from "react-router-dom";
-//import { PiecesQueries } from "../components/PiecesQueries/PiecesQueries";
-import PrivateRoute from "../components/PrivateRouteComponent";
 import { ResearchsQueries } from "../components/PiecesResearchs/ResearchsQueries";
+import { ProtectedRouteElement } from "./RouteElements";
 
-export function ResearchQueries({
-  handleCheckLoginCallback,
-  accessToken,
-  refreshToken,
-  permissions,
-}) {
-  return [
-    <>
-      <Route
-              path="piece_researchs"
-              element={
-                <PrivateRoute
-                  checkLogin={handleCheckLoginCallback}
-                  element={
-                    <ResearchsQueries
-                      accessToken={accessToken}
-                      refreshToken={refreshToken}
-                      module={"Research"}
-                      title={"Investigación"}
-                      permissions={permissions}
-                    />
-                  }
-                />
-              }
-            />
-    </>
-  ];
-}
+export const researchQueriesRoutes = [
+  {
+    path: "piece_researchs",
+    element: (
+      <ProtectedRouteElement
+        component={ResearchsQueries}
+        componentProps={{ module: "Research", title: "Investigación" }}
+      />
+    ),
+  },
+];

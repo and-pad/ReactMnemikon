@@ -1,21 +1,13 @@
-import { Routes, Route, Navigate } from "react-router-dom";
-import Login from "../components/LoginComponents/Login";
+import { Navigate } from "react-router-dom";
+import { LoginRouteElement } from "./RouteElements";
 
-export function AuthRoutes({ handleLoginCallback, accessToken, setAccessToken }) {
-  return (
-    <>
-      <Route path="/" element={<Navigate to="/login" replace />} />
-      <Route
-        path="/login"
-        element={
-          <Login
-            onLogin={handleLoginCallback}
-            setAccessToken={setAccessToken}
-            accessToken={accessToken}
-          />
-        }
-      />
-      </>
-    
-  );
-}
+export const authRoutes = [
+  {
+    path: "/",
+    element: <Navigate to="/login" replace />,
+  },
+  {
+    path: "/login",
+    element: <LoginRouteElement />,
+  },
+];

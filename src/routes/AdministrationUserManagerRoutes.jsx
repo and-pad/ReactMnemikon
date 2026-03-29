@@ -1,97 +1,38 @@
-import { Route } from "react-router-dom";
-import PrivateRoute from "../components/PrivateRouteComponent";
-import  { Navigate } from "react-router-dom";
-//import { EditRestoration } from "../components/PiecesRestorations/edit";
-
-
-import {
-  UserManageDataTable,
- // UsersNavBar,
-} from "../components/UserManage/Users";
-
-//import { PermissionRoute } from './components/Permissions/permissions';
+import { Navigate } from "react-router-dom";
+import { UserManageDataTable } from "../components/UserManage/Users";
 import {
   InactiveUsersDatatable,
   ActiveUsersDatatable,
   CreateUserForm,
   UserEditForm,
 } from "../components/UserManage/usersContext";
+import { ProtectedRouteElement } from "./RouteElements";
 
-
-export function AdmUserManage({
-  handleCheckLoginCallback,
-  accessToken,
-  refreshToken,
- // permissions,
-}) {
-  return [
-    <>
-      <Route
-        path="administration/user_manage/user/"
-        element={
-          <PrivateRoute
-            element={
-              <UserManageDataTable
-                accessToken={accessToken}
-                refreshToken={refreshToken}
-              />
-            }
-            checkLogin={handleCheckLoginCallback}
-          />
-        }
-      >
-        <Route index element={<Navigate to="users_active" />} />
-
-        <Route
-          path="users_active"
-          element={
-            <PrivateRoute
-              element={<ActiveUsersDatatable />}
-              checkLogin={handleCheckLoginCallback}
-            />
-          }
-        />
-
-        <Route
-          path="users_inactive"
-          element={
-            <PrivateRoute
-              element={<InactiveUsersDatatable />}
-              checkLogin={handleCheckLoginCallback}
-            />
-          }
-        />
-
-        <Route
-          path="new_user"
-          element={
-            <PrivateRoute
-              element={
-                <CreateUserForm
-                  accessToken={accessToken}
-                  refreshToken={refreshToken}
-                />
-              }
-              checkLogin={handleCheckLoginCallback}
-            />
-          }
-        />
-
-        <Route
-          path=":id/user_edit"
-          element={
-            <PrivateRoute
-              element={
-                <UserEditForm
-                  accessToken={accessToken}
-                  refreshToken={refreshToken}
-                />
-              }
-              checkLogin={handleCheckLoginCallback}
-            />
-          }
-        />
-      </Route>
-    </>
-  ];
-}
+export const administrationUserManagerRoutes = [
+  {
+    path: "administration/user_manage/user/",
+    element: <ProtectedRouteElement component={UserManageDataTable} />,
+    children: [
+      {
+        index: true,
+        element: <Navigate to="users_active" />,
+      },
+      {
+        path: "users_active",
+        element: <ProtectedRouteElement component={ActiveUsersDatatable} />,
+      },
+      {
+        path: "users_inactive",
+        element: <ProtectedRouteElement component={InactiveUsersDatatable} />,
+      },
+      {
+        path: "new_user",
+        element: <ProtectedRouteElement component={CreateUserForm} />,
+      },
+      {
+        path: ":id/user_edit",
+        element: <ProtectedRouteElement component={UserEditForm} />,
+      },
+    ],
+  },
+];

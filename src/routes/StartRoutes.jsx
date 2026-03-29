@@ -1,25 +1,9 @@
-import { Route } from "react-router-dom";
-import PrivateRoute from "../components/PrivateRouteComponent";
 import { Home } from "../components/Home/Start";
+import { ProtectedRouteElement } from "./RouteElements";
 
-export function Start({ accessToken, refreshToken, handleCheckLoginCallback }) {
-  return [
-    <Route
-      key="start"
-      path="start"
-      element={
-        <PrivateRoute
-          element={
-            <Home
-              accessToken={accessToken}
-              refreshToken={refreshToken}
-              handleCheckLoginCallback={handleCheckLoginCallback}
-            />
-          }
-          checkLogin={handleCheckLoginCallback}
-        />
-      }
-    />,
-    // más rutas si quieres
-  ];
-}
+export const startRoutes = [
+  {
+    path: "start",
+    element: <ProtectedRouteElement component={Home} />,
+  },
+];
