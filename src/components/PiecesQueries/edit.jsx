@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useData } from "./inventoryActions";
 import { getTranslations } from "../Languages/i18n";
@@ -8,12 +8,6 @@ import SETTINGS from "../Config/settings";
 import "react-dropzone-uploader/dist/styles.css";
 //import Dropzone from 'react-dropzone-uploader';
 import { Modal } from "bootstrap/dist/js/bootstrap.bundle.min";
-import {
-  formatSize,
-  //fileTypes,
-  //mimeIcons,
-  //colorFile,
-} from "../LocalTools/tools";
 //import { faBan } from "@fortawesome/free-solid-svg-icons";
 //import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 //import Dropzone from "react-dropzone";
@@ -35,139 +29,30 @@ export const EditInventory = ({ accessToken, refreshToken, permissions }) => {
   //definiciones para manejar los cambios
   const data = useData();
   const [Data, setData] = useState();
-  const [Genders, setGenders] = useState();
-  const [Subgenders, setSubgenders] = useState();
   const [formData, setFormData] = useState();
   const [actualFormData, setCpFormData] = useState();
-  const [filteredGenders, setFilteredGenders] = useState();
-  const [filteredSubGenders, setFilteredSubGenders] = useState();
-  const [TypeObject, setTypeObject] = useState();
-  const [filteredTypeObject, setfilteredTypeObject] = useState();
-  const [DominantMaterial, setDominantMaterial] = useState();
-  const [filteredDominantMaterial, setFilteredDominantMaterial] = useState();
-  const refToSave = useRef({});
   const [isModified, setIsModified] = useState();
-  const [tags, setTags] = useState([]);
-  const [editTag, setEditTag] = useState("");
-  const [currentTag, setCurrentTag] = useState("");
   const [Pics, setPics] = useState(); //Estas imagenes van cambiando conforme se escribe sobre ellas
   const [actualPics, setCpPics] = useState(); //Estas se mantienen como estaban para hacer la comparación
   const [PicsNew, setPicsNew] = useState([]); //Estas imagenes van cambiando conforme se escribe sobre ellas
-  const [currentImgNewIndex, setCurrentImgNewIndex] = useState(0); //el indice para navegar entre imagenes
 
   const [DocumentsNew, setDocumentsNew] = useState([]); //Estas son las imagenes nuevas
-  const [currentDocNewIndex, setCurrentDocNewIndex] = useState(0); //el indice para navegar entre imagenes
 
-  const [currentImgIndex, setCurrentImgIndex] = useState(0); //el indice para navegar entre imagenes
-  const [currentPic, setCurrentPic] = useState(); //la imagen que se muestra actualmente
   const [changedPics, setchangedPics] = useState({});
   const [changedDocs, setchangedDocs] = useState();
   const [isDataLoaded, setIsDataLoaded] = useState(false); // Estado para verificar si los datos ya fueron cargados
 
-  //const [currentDoc, setCurrentDoc] = useState();
-  const [currentDocIndex, setCurrentDocIndex] = useState(0);
-
   const [Documents, setDocuments] = useState();
   const [actualDocs, setCpDocs] = useState();
 
-  const [isExpandedImg, setIsExpandedImg] = useState(false);
-  const [isExpandedDoc, setIsExpandedDoc] = useState(false);
-
   const image_path =
     SETTINGS.URL_ADDRESS.server_url + SETTINGS.URL_ADDRESS.inventory_thumbnails;
-
-  const handlePrev = () => {
-    setCurrentImgIndex((prevIndex) => {
-      const newIndex = prevIndex === 0 ? Pics.length - 1 : prevIndex - 1;
-      setCurrentPic(Pics && Pics.length > 0 ? Pics[newIndex] : null);
-      return newIndex;
-    });
-  };
-
-  const handleNext = () => {
-    setCurrentImgIndex((prevIndex) => {
-      const newIndex = prevIndex === Pics.length - 1 ? 0 : prevIndex + 1;
-      //console.log(newIndex);
-      setCurrentPic(Pics && Pics.length > 0 ? Pics[newIndex] : null);
-      return newIndex;
-    });
-  };
-  const handlePrevNew = () => {
-    setCurrentImgNewIndex((prevIndex) => {
-      if (PicsNew.length > 0) {
-        return prevIndex === 0 ? PicsNew.length - 1 : prevIndex - 1;
-      }
-      return prevIndex; // No cambia si no hay imágenes
-    });
-    //setCurrentPicNew(PicsNew && PicsNew.length > 0 ? PicsNew[currentImgNewIndex] : null);
-  };
-  const handleNextNew = () => {
-    setCurrentImgNewIndex((prevIndex) => {
-      if (PicsNew.length > 0) {
-        return prevIndex === PicsNew.length - 1 ? 0 : prevIndex + 1;
-      }
-      return prevIndex; // No cambia si no hay imágenes
-    });
-    // setCurrentPicNew(PicsNew && PicsNew.length > 0 ? PicsNew[currentImgNewIndex] : null);
-  };
-
-
-
-
-
-  const handleImageDrop = (acceptedFiles) => {
-    //console.log("pics new", PicsNew);
-    const updatedPics = [...PicsNew];
-    updatedPics[currentImgNewIndex] = {
-      ...updatedPics[currentImgNewIndex],
-      file: acceptedFiles[0],
-      size: acceptedFiles[0].size,
-      mime_type: acceptedFiles[0].type,
-    };
-    setPicsNew(updatedPics);
-  };
-
-  const handleDocumentDrop = (acceptedFiles) => {
-    const updatedDocs = [...DocumentsNew];
-    updatedDocs[currentDocNewIndex] = {
-      ...updatedDocs[currentDocNewIndex],
-      file: acceptedFiles[0],
-      name: acceptedFiles[0].name.split(".").slice(0, -1).join("."),
-      size: acceptedFiles[0].size,
-      mime_type: acceptedFiles[0].type,
-    };
-    setDocumentsNew(updatedDocs);
-  };
-  const addImage = () => {
-    const newImage = {
-      photographer: "",
-      description: "",
-      photographed_at: "",
-      file: null,
-    };
-    setPicsNew([...PicsNew, newImage]);
-    setCurrentImgNewIndex(PicsNew.length); // Actualiza el índice al último elemento nuevo
-  };
-  const deleteImage = (index) => {
-    setPicsNew(PicsNew.filter((_, i) => i !== index));
-    setCurrentImgNewIndex(0); // Actualiza el índice al primer elemento
-  };
-
-
 
   useEffect(() => {
     if (data !== undefined) {
       if (data.piece) {
         setData(data.piece);
         setDocuments(data.documents);
-        setGenders(data.genders);
-        setSubgenders(data.subgenders);
-        setTypeObject(data.type_object);
-        setfilteredTypeObject(TypeObject);
-        setDominantMaterial(data.dominant_material);
-        setFilteredDominantMaterial(DominantMaterial);
-        setFilteredGenders(Genders);
-        setFilteredSubGenders(Subgenders);
         // Si no hacemos esta revision si hay un cambio en los datos se reinician los cabios
         // eso no es deseado asi que solo llenamos los datos una vez
         //console.log("gender_info", data?.piece ? data.piece : "N/D");
@@ -245,14 +130,6 @@ export const EditInventory = ({ accessToken, refreshToken, permissions }) => {
           setCpDocs(data.documents);
           setIsDataLoaded(true);
           setIsModified(false);
-          const tagsArray = temp.tags.split(",").map((tag) => tag.trim());
-          setTags(tagsArray);
-        }
-        if (Pics && Pics.length > 0) {
-          setCurrentPic(Pics[currentImgIndex]);
-          //console.log("Pics current", Pics[currentImgIndex]);
-          //console.log("current index", currentImgIndex);
-          //console.log("Pics", Pics);
         }
       } else {
         if (data.changes) {
@@ -265,15 +142,7 @@ export const EditInventory = ({ accessToken, refreshToken, permissions }) => {
     data,
     setData,
     setFormData,
-    setGenders,
-    setSubgenders,
-    Genders,
-    Subgenders,
     isModified,
-    DominantMaterial,
-    TypeObject,
-
-    currentImgIndex,
     isDataLoaded,
   ]);
 
@@ -457,187 +326,6 @@ export const EditInventory = ({ accessToken, refreshToken, permissions }) => {
     });
   };
 
-  const handleTagClick = (index) => {
-    // Colocar el tag en el input para permitir su edición
-    setCurrentTag(tags[index]);
-    setEditTag(index);
-  };
-
-  const handleTagDelete = (index) => {
-    setTags(tags.filter((_, i) => i !== index)); // Eliminar el tag seleccionado
-    setEditTag("");
-    setCurrentTag("");
-  };
-
-  const handleTagKeyDown = (e) => {
-    if (editTag !== "") {
-      const result = tags.map((tag, index) =>
-        index !== editTag ? tag : e.target.value
-      );
-      setTags(result);
-      setEditTag("");
-      setCurrentTag("");
-
-      // esta es la idea hay que hacerla con el setformData //formData.tags = result.join(",");
-      setFormData((prevData) => ({
-        ...prevData,
-        tags: result.join(","),
-      }));
-    } else {
-      if (e.target.value.trim() !== "") {
-        setTags([...tags, e.target.value.trim()]);
-        setCurrentTag("");
-        setFormData((prevData) => ({
-          ...prevData,
-          tags: [...tags, e.target.value.trim()].join(","), // Actualiza los tags en el formData
-        }));
-      }
-    }
-  };
-
-  const handleInputChange = (e) => {
-    const { id, value } = e.target;
-
-    if (id === "tags") {
-      if (value.endsWith(",")) {
-        // Agrega el tag sin la coma al final y limpia el currentTag
-        // setTags([...tags, currentTag.trim()]);
-        //setCurrentTag("");
-      } else {
-        setCurrentTag(value); // Actualiza el tag actual mientras se escribe
-      }
-    } else {
-      setFormData((prevData) => ({
-        ...prevData,
-        [id]: value,
-      }));
-    }
-  };
-
-  const handleGenderChange = (selectedGender) => {
-    setFormData({
-      ...formData,
-      gender_id: {
-        _id: selectedGender._id,
-        title: selectedGender.title,
-      },
-    });
-    //console.log("selected Gender", selectedGender);
-  };
-
-  const handleSubGenderChange = (selectedSubGender) => {
-    setFormData({
-      ...formData,
-      subgender_id: {
-        _id: selectedSubGender._id,
-        title: selectedSubGender.title,
-      },
-    });
-    //console.log("selected SubGender", selectedSubGender);
-  };
-
-  const handleTypeObjectChange = (selectedTypeObject) => {
-    setFormData({
-      ...formData,
-      type_object_id: {
-        _id: selectedTypeObject._id,
-        title: selectedTypeObject.title,
-      },
-    });
-    //console.log("selected TypeObject", selectedTypeObject);
-  };
-
-  const handleDominantMaterialChange = (selectedDominantMaterial) => {
-    setFormData({
-      ...formData,
-      dominant_material_id: {
-        _id: selectedDominantMaterial._id,
-        title: selectedDominantMaterial.title,
-      },
-    });
-    //console.log("selected DominantMaterial", selectedDominantMaterial);
-  };
-
-  // Filtra las opciones de gender en función de lo que escribe el usuario
-  const handleGenderFilter = (e) => {
-    const { value } = e.target;
-    const filtered = Genders.filter((gender) =>
-      gender.title.toLowerCase().includes(value.toLowerCase())
-    );
-    setFilteredGenders(filtered);
-  };
-  const handleSubGenderFilter = (e) => {
-    const { value } = e.target;
-
-    // Filtra la lista de genders
-    const filtered = Subgenders.filter((subgender) =>
-      subgender.title.toLowerCase().includes(value.toLowerCase())
-    );
-
-    setFilteredSubGenders(filtered);
-  };
-
-  const handleTypeObjectFilter = (e) => {
-    const { value } = e.target;
-    const filtered = TypeObject.filter((type_object) =>
-      type_object.title.toLowerCase().includes(value.toLowerCase())
-    );
-    setfilteredTypeObject(filtered);
-  };
-
-  const handleDominantMaterialFilter = (e) => {
-    const { value } = e.target;
-    const filtered = DominantMaterial.filter((dominant_material) =>
-      dominant_material.title.toLowerCase().includes(value.toLowerCase())
-    );
-    setFilteredDominantMaterial(filtered);
-  };
-
-  // Actualiza los campos de la imagen seleccionada
-  const handleInputPic = (e) => {
-    const { id, value } = e.target;
-    setPics((prevData) =>
-      prevData.map(
-        (pic, index) =>
-          index === currentImgIndex
-            ? { ...pic, [id]: value } // Crea una copia del objeto actual con el campo actualizado
-            : pic // Retorna el objeto sin cambios si el índice no coincide
-      )
-    );
-  };
-
-
-
-  const handleChangeImageStatus = ({ file }) => {
-    setchangedPics((prevChangedPics) => {
-      const updatedFile = new File([file], file.name, {
-        type: file.type,
-        lastModified: file.lastModified,
-      });
-      return {
-        ...prevChangedPics,
-        [currentImgIndex]: {
-          _id: Pics[currentImgIndex]._id,
-          file: updatedFile,
-        },
-      };
-    });
-  };
-
-  const handleChangeDocumentStatus = ({ file }) => {
-    const copyFile = new File([file], file.name, {
-      type: file.type,
-      lastModified: file.lastModified,
-    });
-    setchangedDocs((prevChangedDocs) => ({
-      ...prevChangedDocs,
-      [currentDocIndex]: {
-        _id: Documents[currentDocIndex]["_id"],
-        file: copyFile,
-      },
-    }));
-  };
-
   return (
     <>
       {isModified ? (
@@ -654,63 +342,21 @@ export const EditInventory = ({ accessToken, refreshToken, permissions }) => {
               <InventoryFields
                 langData={langData}
                 formData={formData}
-                handleInputChange={handleInputChange}
-                tags={tags}
-                currentTag={currentTag}
-                handleTagClick={handleTagClick}
-                handleTagDelete={handleTagDelete}
-                handleTagKeyDown={handleTagKeyDown}
-                filteredGenders={filteredGenders}
-                handleGenderFilter={handleGenderFilter}
-                handleGenderChange={handleGenderChange}
-                filteredSubGenders={filteredSubGenders}
-                handleSubGenderFilter={handleSubGenderFilter}
-                handleSubGenderChange={handleSubGenderChange}
-                filteredTypeObject={filteredTypeObject}
-                handleTypeObjectFilter={handleTypeObjectFilter}
-                handleTypeObjectChange={handleTypeObjectChange}
-                filteredDominantMaterial={filteredDominantMaterial}
-                handleDominantMaterialFilter={handleDominantMaterialFilter}
-                handleDominantMaterialChange={handleDominantMaterialChange}
+                setFormData={setFormData}
+                inventoryData={data}
                 image_path={image_path}
-                currentPic={currentPic}
-                currentImgIndex={currentImgIndex}
-                handleChangeImageStatus={handleChangeImageStatus}
                 Pics={Pics}
-                formatDate={formatDate}
-                //formatSize={formatSize}
-                handleInputPic={handleInputPic}
-                handlePrev={handlePrev}
-                handleNext={handleNext}
-                isExpandedImg={isExpandedImg}
-                //toggleExpandNewImage={toggleExpandNewImage}
-                deleteImage={deleteImage}
-                addImage={addImage}
-                currentImgNewIndex={currentImgNewIndex}
+                setPics={setPics}
                 PicsNew={PicsNew}
-                handleImageDrop={handleImageDrop}
+                setPicsNew={setPicsNew}
                 changedPics={changedPics}
-                refToSave={refToSave}
-                
-                setPicsNew ={setPicsNew}
-                handlePrevNew = {handlePrevNew}
-                handleNextNew = {handleNextNew}
-                Documents = {Documents}
-                currentDocIndex = {currentDocIndex}
-                handleChangeDocumentStatus = {handleChangeDocumentStatus}
-                changedDocs = {changedDocs}
-                setDocumentsNew = {setDocumentsNew}
-                currentDocNewIndex = {currentDocNewIndex}
-                handleDocumentDrop = {handleDocumentDrop}
-
-                setDocuments = {setDocuments}
-                setCurrentDocNewIndex = {setCurrentDocNewIndex}
-                setIsExpandedImg = {setIsExpandedImg}
-                setIsExpandedDoc = {setIsExpandedDoc}
-                setCurrentDocIndex = {setCurrentDocIndex}
-                DocumentsNew = {DocumentsNew}
-
-                isExpandedDoc={isExpandedDoc}
+                setchangedPics={setchangedPics}
+                Documents={Documents}
+                setDocuments={setDocuments}
+                DocumentsNew={DocumentsNew}
+                setDocumentsNew={setDocumentsNew}
+                changedDocs={changedDocs}
+                setchangedDocs={setchangedDocs}
                 sendSave={sendSave}
               />
             </div>
@@ -729,10 +375,4 @@ export const EditInventory = ({ accessToken, refreshToken, permissions }) => {
     </>
   );
 };
-
-// Agrega esta función en el componente para formatear la fecha:
-function formatDate(dateTime) {
-  return dateTime.split(" ")[0]; // Extrae solo la fecha en formato YYYY-MM-DD
-}
-
 

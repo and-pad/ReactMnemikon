@@ -1,7 +1,8 @@
+import { useEffect, useState } from "react";
 import { faBan } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Dropzone from "react-dropzone";
-import { IconButton, Button, Box, Typography, Paper } from "@mui/material";
+import { IconButton, Button, Typography, Paper } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import { pink } from "@mui/material/colors";
@@ -24,68 +25,283 @@ import { AppraisalField } from "./_appraisal_field";
 export const InventoryFields = ({
   langData,
   formData,
-  handleInputChange,
-  tags,
-  currentTag,
-  handleTagClick,
-  handleTagDelete,
-  handleTagKeyDown,
-  filteredGenders,
-  handleGenderFilter,
-  handleGenderChange,
-  filteredSubGenders,
-  handleSubGenderFilter,
-  handleSubGenderChange,
-  filteredTypeObject,
-  handleTypeObjectFilter,
-  handleTypeObjectChange,
-  filteredDominantMaterial,
-  handleDominantMaterialFilter,
-  handleDominantMaterialChange,
+  setFormData,
+  inventoryData,
   image_path,
-  currentPic,
-  currentImgIndex,
-  handleChangeImageStatus,
   Pics,
-  formatDate,
-  //formatSize,
-  handleInputPic,
-  handlePrev,
-  handleNext,
-  isExpandedImg,
-  //toggleExpandNewImage,
-  deleteImage,
-  addImage,
-  currentImgNewIndex,
+  setPics,
   PicsNew,
-  handleImageDrop,
-  changedPics,
-  refToSave,
-
   setPicsNew,
-  handlePrevNew,
-  handleNextNew,
+  changedPics,
   Documents,
-  currentDocIndex,
-  handleChangeDocumentStatus,
-  changedDocs,
-  setDocumentsNew,
-  currentDocNewIndex,
-  handleDocumentDrop,
-
   setDocuments,
-  setCurrentDocNewIndex,
-  setIsExpandedImg,
-  setIsExpandedDoc,
-  setCurrentDocIndex,
   DocumentsNew,
-  isExpandedDoc,
+  setDocumentsNew,
+  changedDocs,
+  setchangedPics,
+  setchangedDocs,
   sendSave,
 
   handleLocationChange,
   handleLocationFilter,
   filteredLocations,
 }) => {
+  const [Genders, setGenders] = useState([]);
+  const [Subgenders, setSubgenders] = useState([]);
+  const [TypeObject, setTypeObject] = useState([]);
+  const [DominantMaterial, setDominantMaterial] = useState([]);
+  const [filteredGenders, setFilteredGenders] = useState([]);
+  const [filteredSubGenders, setFilteredSubGenders] = useState([]);
+  const [filteredTypeObject, setfilteredTypeObject] = useState([]);
+  const [filteredDominantMaterial, setFilteredDominantMaterial] = useState([]);
+  const [tags, setTags] = useState([]);
+  const [editTag, setEditTag] = useState("");
+  const [currentTag, setCurrentTag] = useState("");
+  const [currentImgIndex, setCurrentImgIndex] = useState(0);
+  const [currentImgNewIndex, setCurrentImgNewIndex] = useState(0);
+  const [currentDocIndex, setCurrentDocIndex] = useState(0);
+  const [currentDocNewIndex, setCurrentDocNewIndex] = useState(0);
+  const [isExpandedImg, setIsExpandedImg] = useState(false);
+  const [isExpandedDoc, setIsExpandedDoc] = useState(false);
+  const currentPic = Pics && Pics.length > 0 ? Pics[currentImgIndex] : null;
+
+  useEffect(() => {
+    setGenders(inventoryData?.genders || []);
+    setSubgenders(inventoryData?.subgenders || []);
+    setTypeObject(inventoryData?.type_object || []);
+    setDominantMaterial(inventoryData?.dominant_material || []);
+  }, [inventoryData]);
+
+  useEffect(() => {
+    setFilteredGenders(Genders);
+  }, [Genders]);
+
+  useEffect(() => {
+    setFilteredSubGenders(Subgenders);
+  }, [Subgenders]);
+
+  useEffect(() => {
+    setfilteredTypeObject(TypeObject);
+  }, [TypeObject]);
+
+  useEffect(() => {
+    setFilteredDominantMaterial(DominantMaterial);
+  }, [DominantMaterial]);
+
+  useEffect(() => {
+    const tagsArray =
+      formData?.tags?.split(",").map((tag) => tag.trim()).filter(Boolean) || [];
+    setTags(tagsArray);
+  }, [formData?.tags]);
+
+  const handleInputChange = (e) => {
+    const { id, value } = e.target;
+
+    if (id === "tags") {
+      if (!value.endsWith(",")) {
+        setCurrentTag(value);
+      }
+    } else {
+      setFormData((prevData) => ({
+        ...prevData,
+        [id]: value,
+      }));
+    }
+  };
+
+  const handleTagClick = (index) => {
+    setCurrentTag(tags[index]);
+    setEditTag(index);
+  };
+
+  const handleTagDelete = (index) => {
+    const updatedTags = tags.filter((_, i) => i !== index);
+    setTags(updatedTags);
+    setEditTag("");
+    setCurrentTag("");
+    setFormData((prevData) => ({
+      ...prevData,
+      tags: updatedTags.join(","),
+    }));
+  };
+
+  const handleTagKeyDown = (e) => {
+    if (editTag !== "") {
+      const result = tags.map((tag, index) =>
+        index !== editTag ? tag : e.target.value,
+      );
+      setTags(result);
+      setEditTag("");
+      setCurrentTag("");
+      setFormData((prevData) => ({
+        ...prevData,
+        tags: result.join(","),
+      }));
+    } else if (e.target.value.trim() !== "") {
+      const updatedTags = [...tags, e.target.value.trim()];
+      setTags(updatedTags);
+      setCurrentTag("");
+      setFormData((prevData) => ({
+        ...prevData,
+        tags: updatedTags.join(","),
+      }));
+    }
+  };
+
+  const handleGenderChange = (selectedGender) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      gender_id: {
+        _id: selectedGender._id,
+        title: selectedGender.title,
+      },
+    }));
+  };
+
+  const handleSubGenderChange = (selectedSubGender) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      subgender_id: {
+        _id: selectedSubGender._id,
+        title: selectedSubGender.title,
+      },
+    }));
+  };
+
+  const handleTypeObjectChange = (selectedTypeObject) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      type_object_id: {
+        _id: selectedTypeObject._id,
+        title: selectedTypeObject.title,
+      },
+    }));
+  };
+
+  const handleDominantMaterialChange = (selectedDominantMaterial) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      dominant_material_id: {
+        _id: selectedDominantMaterial._id,
+        title: selectedDominantMaterial.title,
+      },
+    }));
+  };
+
+  const handleGenderFilter = (e) => {
+    const { value } = e.target;
+    const filtered = Genders.filter((gender) =>
+      gender.title.toLowerCase().includes(value.toLowerCase()),
+    );
+    setFilteredGenders(filtered);
+  };
+
+  const handleSubGenderFilter = (e) => {
+    const { value } = e.target;
+    const filtered = Subgenders.filter((subgender) =>
+      subgender.title.toLowerCase().includes(value.toLowerCase()),
+    );
+    setFilteredSubGenders(filtered);
+  };
+
+  const handleTypeObjectFilter = (e) => {
+    const { value } = e.target;
+    const filtered = TypeObject.filter((type_object) =>
+      type_object.title.toLowerCase().includes(value.toLowerCase()),
+    );
+    setfilteredTypeObject(filtered);
+  };
+
+  const handleDominantMaterialFilter = (e) => {
+    const { value } = e.target;
+    const filtered = DominantMaterial.filter((dominant_material) =>
+      dominant_material.title.toLowerCase().includes(value.toLowerCase()),
+    );
+    setFilteredDominantMaterial(filtered);
+  };
+
+  const handlePrev = () => {
+    setCurrentImgIndex((prevIndex) =>
+      prevIndex === 0 ? Pics.length - 1 : prevIndex - 1,
+    );
+  };
+
+  const handleNext = () => {
+    setCurrentImgIndex((prevIndex) =>
+      prevIndex === Pics.length - 1 ? 0 : prevIndex + 1,
+    );
+  };
+
+  const handleInputPic = (e) => {
+    const { id, value } = e.target;
+    setPics((prevData) =>
+      prevData.map((pic, index) =>
+        index === currentImgIndex ? { ...pic, [id]: value } : pic,
+      ),
+    );
+  };
+
+  const handleChangeImageStatus = ({ file }) => {
+    setchangedPics((prevChangedPics) => {
+      const updatedFile = new File([file], file.name, {
+        type: file.type,
+        lastModified: file.lastModified,
+      });
+      return {
+        ...prevChangedPics,
+        [currentImgIndex]: {
+          _id: Pics[currentImgIndex]._id,
+          file: updatedFile,
+        },
+      };
+    });
+  };
+
+  const handlePrevNew = () => {
+    setCurrentImgNewIndex((prevIndex) => {
+      if (PicsNew.length > 0) {
+        return prevIndex === 0 ? PicsNew.length - 1 : prevIndex - 1;
+      }
+      return prevIndex;
+    });
+  };
+
+  const handleNextNew = () => {
+    setCurrentImgNewIndex((prevIndex) => {
+      if (PicsNew.length > 0) {
+        return prevIndex === PicsNew.length - 1 ? 0 : prevIndex + 1;
+      }
+      return prevIndex;
+    });
+  };
+
+  const handleImageDrop = (acceptedFiles) => {
+    const updatedPics = [...PicsNew];
+    updatedPics[currentImgNewIndex] = {
+      ...updatedPics[currentImgNewIndex],
+      file: acceptedFiles[0],
+      size: acceptedFiles[0].size,
+      mime_type: acceptedFiles[0].type,
+    };
+    setPicsNew(updatedPics);
+  };
+
+  const addImage = () => {
+    const newImage = {
+      photographer: "",
+      description: "",
+      photographed_at: "",
+      file: null,
+    };
+    setPicsNew([...PicsNew, newImage]);
+    setCurrentImgNewIndex(PicsNew.length);
+  };
+
+  const deleteImage = (index) => {
+    setPicsNew(PicsNew.filter((_, i) => i !== index));
+    setCurrentImgNewIndex(0);
+  };
+
   const handleInputDoc = (e) => {
     const { id, value } = e.target;
     setDocuments((prevData) =>
@@ -127,6 +343,20 @@ export const InventoryFields = ({
     );
   };
 
+  const handleChangeDocumentStatus = ({ file }) => {
+    const copyFile = new File([file], file.name, {
+      type: file.type,
+      lastModified: file.lastModified,
+    });
+    setchangedDocs((prevChangedDocs) => ({
+      ...prevChangedDocs,
+      [currentDocIndex]: {
+        _id: Documents[currentDocIndex]["_id"],
+        file: copyFile,
+      },
+    }));
+  };
+
   const handlePrevNewDoc = () => {
     setCurrentDocNewIndex((prevIndex) => {
       if (DocumentsNew.length > 0) {
@@ -143,7 +373,21 @@ export const InventoryFields = ({
       return prevIndex; // No cambia si no hay imágenes
     });
   };
+  const handleDocumentDrop = (acceptedFiles) => {
+    const updatedDocs = [...DocumentsNew];
+    updatedDocs[currentDocNewIndex] = {
+      ...updatedDocs[currentDocNewIndex],
+      file: acceptedFiles[0],
+      name: acceptedFiles[0].name.split(".").slice(0, -1).join("."),
+      size: acceptedFiles[0].size,
+      mime_type: acceptedFiles[0].type,
+    };
+    setDocumentsNew(updatedDocs);
+  };
 
+  const formatDate = (dateTime) => {
+    return dateTime.split(" ")[0];
+  };
 
   return (
     <>
