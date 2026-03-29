@@ -1,5 +1,11 @@
-import { RestorationEditSelect } from "../components/PiecesRestorations/restorationsActions";
+import { lazy } from "react";
 import { ProtectedRouteElement } from "./RouteElements";
+
+const RestorationEditSelect = lazy(() =>
+  import("../components/PiecesRestorations/restorationsActions").then((module) => ({
+    default: module.RestorationEditSelect,
+  })),
+);
 
 export const restorationEditSelectRoutes = [
   {

@@ -1,5 +1,11 @@
-import { NewRestoration } from "../components/PiecesRestorations/new";
+import { lazy } from "react";
 import { ProtectedRouteElement } from "./RouteElements";
+
+const NewRestoration = lazy(() =>
+  import("../components/PiecesRestorations/new").then((module) => ({
+    default: module.NewRestoration,
+  })),
+);
 
 export const restorationNewRoutes = [
   {

@@ -1,5 +1,11 @@
-import { EditRestoration } from "../components/PiecesRestorations/edit";
+import { lazy } from "react";
 import { ProtectedRouteElement } from "./RouteElements";
+
+const EditRestoration = lazy(() =>
+  import("../components/PiecesRestorations/edit").then((module) => ({
+    default: module.EditRestoration,
+  })),
+);
 
 export const restorationQueriesActionsRoutes = [
   {

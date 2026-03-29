@@ -1,5 +1,11 @@
-import { RestorationsQueries } from "../components/PiecesRestorations/restorationsQueries";
+import { lazy } from "react";
 import { ProtectedRouteElement } from "./RouteElements";
+
+const RestorationsQueries = lazy(() =>
+  import("../components/PiecesRestorations/restorationsQueries").then((module) => ({
+    default: module.RestorationsQueries,
+  })),
+);
 
 export const restorationQueriesRoutes = [
   {

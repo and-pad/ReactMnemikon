@@ -1,7 +1,18 @@
+import { lazy } from "react";
 import { Navigate } from "react-router-dom";
-import { ResearchEdit } from "../components/PiecesResearchs/researchsActions";
-import { EditResearch } from "../components/PiecesResearchs/edit";
 import { ProtectedRouteElement } from "./RouteElements";
+
+const ResearchEdit = lazy(() =>
+  import("../components/PiecesResearchs/researchsActions").then((module) => ({
+    default: module.ResearchEdit,
+  })),
+);
+
+const EditResearch = lazy(() =>
+  import("../components/PiecesResearchs/edit").then((module) => ({
+    default: module.EditResearch,
+  })),
+);
 
 export const researchQueriesActionsRoutes = [
   {

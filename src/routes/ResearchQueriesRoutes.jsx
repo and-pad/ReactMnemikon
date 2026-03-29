@@ -1,5 +1,11 @@
-import { ResearchsQueries } from "../components/PiecesResearchs/ResearchsQueries";
+import { lazy } from "react";
 import { ProtectedRouteElement } from "./RouteElements";
+
+const ResearchsQueries = lazy(() =>
+  import("../components/PiecesResearchs/ResearchsQueries").then((module) => ({
+    default: module.ResearchsQueries,
+  })),
+);
 
 export const researchQueriesRoutes = [
   {

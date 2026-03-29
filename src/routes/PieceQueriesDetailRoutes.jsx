@@ -1,12 +1,36 @@
+import { lazy } from "react";
 import { Navigate } from "react-router-dom";
-import {
-  Inventory,
-  Research,
-  Restoration,
-  Movements,
-} from "../components/PiecesQueries/details";
-import { PieceDetail } from "../components/PiecesQueries/PieceDetail";
 import { ProtectedRouteElement } from "./RouteElements";
+
+const PieceDetail = lazy(() =>
+  import("../components/PiecesQueries/PieceDetail").then((module) => ({
+    default: module.PieceDetail,
+  })),
+);
+
+const Inventory = lazy(() =>
+  import("../components/PiecesQueries/details").then((module) => ({
+    default: module.Inventory,
+  })),
+);
+
+const Research = lazy(() =>
+  import("../components/PiecesQueries/details").then((module) => ({
+    default: module.Research,
+  })),
+);
+
+const Restoration = lazy(() =>
+  import("../components/PiecesQueries/details").then((module) => ({
+    default: module.Restoration,
+  })),
+);
+
+const Movements = lazy(() =>
+  import("../components/PiecesQueries/details").then((module) => ({
+    default: module.Movements,
+  })),
+);
 
 export const pieceQueriesDetailRoutes = [
   {

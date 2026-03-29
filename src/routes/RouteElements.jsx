@@ -1,6 +1,11 @@
+import { Suspense } from "react";
 import Login from "../components/LoginComponents/Login";
 import PrivateRoute from "../components/PrivateRouteComponent";
 import { useRouteContext } from "./RouteContext";
+
+function RouteLoadingFallback() {
+  return <h6>Cargando...</h6>;
+}
 
 export function LoginRouteElement() {
   const { handleLoginCallback, accessToken, setAccessToken } = useRouteContext();
@@ -26,13 +31,15 @@ export function ProtectedRouteElement({ component: Component, componentProps = {
     <PrivateRoute
       checkLogin={handleCheckLoginCallback}
       element={
-        <Component
-          {...componentProps}
-          accessToken={accessToken}
-          refreshToken={refreshToken}
-          permissions={permissions}
-          handleCheckLoginCallback={handleCheckLoginCallback}
-        />
+        <Suspense fallback={<RouteLoadingFallback />}>
+          <Component
+            {...componentProps}
+            accessToken={accessToken}
+            refreshToken={refreshToken}
+            permissions={permissions}
+            handleCheckLoginCallback={handleCheckLoginCallback}
+          />
+        </Suspense>
       }
     />
   );

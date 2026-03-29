@@ -1,7 +1,23 @@
-import { EditInventory } from "../components/PiecesQueries/edit";
-import { NewInventory } from "../components/PiecesQueries/new";
-import { InventoryAction } from "../components/PiecesQueries/inventoryActions";
+import { lazy } from "react";
 import { ProtectedRouteElement } from "./RouteElements";
+
+const EditInventory = lazy(() =>
+  import("../components/PiecesQueries/edit").then((module) => ({
+    default: module.EditInventory,
+  })),
+);
+
+const NewInventory = lazy(() =>
+  import("../components/PiecesQueries/new").then((module) => ({
+    default: module.NewInventory,
+  })),
+);
+
+const InventoryAction = lazy(() =>
+  import("../components/PiecesQueries/inventoryActions").then((module) => ({
+    default: module.InventoryAction,
+  })),
+);
 
 export const inventoryQueriesActionsRoutes = [
   {

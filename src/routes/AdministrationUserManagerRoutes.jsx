@@ -1,12 +1,36 @@
+import { lazy } from "react";
 import { Navigate } from "react-router-dom";
-import { UserManageDataTable } from "../components/UserManage/Users";
-import {
-  InactiveUsersDatatable,
-  ActiveUsersDatatable,
-  CreateUserForm,
-  UserEditForm,
-} from "../components/UserManage/usersContext";
 import { ProtectedRouteElement } from "./RouteElements";
+
+const UserManageDataTable = lazy(() =>
+  import("../components/UserManage/Users").then((module) => ({
+    default: module.UserManageDataTable,
+  })),
+);
+
+const ActiveUsersDatatable = lazy(() =>
+  import("../components/UserManage/usersContext").then((module) => ({
+    default: module.ActiveUsersDatatable,
+  })),
+);
+
+const InactiveUsersDatatable = lazy(() =>
+  import("../components/UserManage/usersContext").then((module) => ({
+    default: module.InactiveUsersDatatable,
+  })),
+);
+
+const CreateUserForm = lazy(() =>
+  import("../components/UserManage/usersContext").then((module) => ({
+    default: module.CreateUserForm,
+  })),
+);
+
+const UserEditForm = lazy(() =>
+  import("../components/UserManage/usersContext").then((module) => ({
+    default: module.UserEditForm,
+  })),
+);
 
 export const administrationUserManagerRoutes = [
   {
