@@ -554,7 +554,11 @@ const getDataFromCache = async () => {
   }
 };
 
-const fetchAndCacheData = async (accessToken, refreshToken) => {
+export const revalidateQueryData = async (
+  accessToken,
+  refreshToken,
+  fallbackData = null,
+) => {
   const requestOptions = {
     method: "GET",
     headers: {
@@ -584,13 +588,20 @@ const fetchAndCacheData = async (accessToken, refreshToken) => {
     queryData = data.query;
     const dataCode = data.code;
     Cookies.set("SYNCCODEDB", dataCode);
-    //console.log('dataCode', dataCode);
-    //console.log('query_duration', data.query_duration);
+    try {
+      await saveToCache(queryData); // Guardamos los datos en la caché
+      return { data: queryData, source: "network" };
+    } catch (error) {
+      console.error("Error trying to save the data to cache :", error);
+      throw error; // Relanzamos el error para que se maneje en un nivel superior
+    }
   } else if (response.status === 304) {
+    if (fallbackData !== null) {
+      return { data: fallbackData, source: "memory" };
+    }
+
     data = await getDataFromCache();
-    queryData = data;
-    //console.log('data from cache Prra', data);
-    //console.log(await response.text());
+    return { data, source: "disk" };
   } else {
     const errorData = await response.json();
     if (errorData.code === "token_not_valid") {
@@ -611,45 +622,27 @@ const fetchAndCacheData = async (accessToken, refreshToken) => {
           //viene un json con un elemento llamado "access" que es el nuevo accessToken con tiempo renovado
           const data2 = await response2.json();
           //console.log('rastreo access data', data);
-          return data2;
+          return { data: data2, source: "token_refresh" };
         }
       } catch (e) {
         console.log(e);
         //En caso que no se pueda renovar el refreshToken, redirigimos al login
-        return "not network1";
+        return { data: "not network1", source: "network_error" };
       }
     }
   }
-  try {
-    await saveToCache(queryData); // Guardamos los datos en la caché
-    //  console.log("quewryData",queryData);
-    return queryData; // Devolvemos los datos obtenidos
-  } catch (error) {
-    console.error("Error trying to save the data to cache :", error);
-    throw error; // Relanzamos el error para que se maneje en un nivel superior
-  }
+
+  return { data: queryData, source: "unknown" };
 };
+
 export const fetchData = async (accessToken, refreshToken) => {
   try {
-    let cachedData;
-    let fetch;
-    const _code = Cookies.get("SYNCCODEDB");
-    if (!_code) {
-      fetch = await fetchAndCacheData(accessToken, refreshToken);
-      return fetch;
-    } else {
-      fetch = await fetchAndCacheData(accessToken, refreshToken);
-      //cachedData = await getDataFromCache();
-      cachedData = fetch;
-    }
-
-    //console.log('Data get from cache...');
-
-    return cachedData;
+    const result = await revalidateQueryData(accessToken, refreshToken);
+    return result.data;
   } catch (error) {
     //console.log('No data cached. Obtaining data from server...');
-    const freshData = await fetchAndCacheData(accessToken, refreshToken);
+    const freshData = await revalidateQueryData(accessToken, refreshToken);
     //console.log('Data obtained from server and saved to cache:');
-    return freshData;
+    return freshData.data;
   }
 };

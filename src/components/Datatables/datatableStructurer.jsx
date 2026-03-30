@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { StyleSheetManager } from "styled-components";
 import isPropValid from "@emotion/is-prop-valid";
 
@@ -24,13 +24,64 @@ import Datatable from "react-data-table-component";
 import { CircularIndeterminate } from "./to-delete_datatableBase";
 import { ExpandableComponent } from "./DatatableComponents/datatableComponents";
 import customStyles from "./datatableCustomCellStyle";
-import { useMemo } from "react";
-import { fetchData, formatData, ConstructElementsToHide } from "./dataHandler";
+import { ConstructElementsToHide } from "./dataHandler";
 import { useSessionStorageState } from "./DatatableComponents/SessionStorage";
 import { useNavigate } from "react-router-dom";
 import { getTranslations } from "../Languages/i18n";
+import {
+  loadDatatableSnapshot,
+} from "./datatableDataCache";
 
 const langData = getTranslations();
+const COLUMN_STORAGE_KEY = "showColumnsInventory";
+
+function buildCheckboxValues(columns) {
+  const values = {};
+
+  columns.forEach((column) => {
+    values[column.id] = Boolean(column.show);
+  });
+
+  return values;
+}
+
+function resolveColumnState(baseColumns, module, size) {
+  const columns = baseColumns.map((column) => ({ ...column }));
+  const storedColumns = localStorage.getItem(COLUMN_STORAGE_KEY);
+
+  if (!storedColumns || storedColumns === "undefined") {
+    localStorage.setItem(COLUMN_STORAGE_KEY, JSON.stringify(columns));
+
+    return {
+      defColumns: columns,
+      defColumnsOut: ConstructElementsToHide(columns, size, module) ?? [],
+    };
+  }
+
+  try {
+    const savedColumns = JSON.parse(storedColumns);
+
+    columns.forEach((column, index) => {
+      const savedColumn = savedColumns?.[index];
+
+      if (!savedColumn) {
+        return;
+      }
+
+      column.show = savedColumn.show;
+      column.omit = !savedColumn.show;
+    });
+  } catch (error) {
+    console.error("Error al restaurar la configuración de columnas:", error);
+    localStorage.setItem(COLUMN_STORAGE_KEY, JSON.stringify(columns));
+  }
+
+  return {
+    defColumns: columns,
+    defColumnsOut: ConstructElementsToHide(columns, size, module) ?? [],
+  };
+}
+
 //import { useNavigate } from "react-router-dom";
 //
 
@@ -48,7 +99,6 @@ export const BaseDatatable = ({
 
   const [defColumnsOut, setDefColumnsOut] = useState([]);
   const [size, setSize] = useState(null);
-  const [dataQuery, setDataQuery] = useState([]);
   const [checkboxValues, setCheckboxValues] = useState([]);
   const [filterText, setFilterText] = useState("");
 
@@ -151,19 +201,55 @@ export const BaseDatatable = ({
     };
   }, [size, timerIdRef]);
 
-  // var prop ;
-  const [hasFetched, setHasFetched] = useState(false);
-
-  const ReloadData = async () => {
-    //await handleDeleteChache();
-    setHasFetched(false);
-    setPending(true);
-
-    //setDataQuery([]);
-  };
   useEffect(() => {
-    const filtered = () => {
-      return filterSearch(
+    let isActive = true;
+
+    const fetchDataAndFormat = async () => {
+      if (size === null) {
+        return;
+      }
+
+      try {
+        setPending(true);
+        const snapshot = await loadDatatableSnapshot({
+          accessToken,
+          refreshToken,
+          module,
+          size,
+        });
+
+        if (!isActive) {
+          return;
+        }
+
+        const columnState = resolveColumnState(snapshot.defColumns, module, size);
+
+        setTableData(snapshot.tableData);
+        setDefColumns(columnState.defColumns);
+        setDefColumnsOut(columnState.defColumnsOut);
+        setRestorations(snapshot.restorations);
+        setResearchs(snapshot.researchs);
+      } catch (error) {
+        if (isActive) {
+          console.error("Error al procesar los datos:", error);
+        }
+      } finally {
+        if (isActive) {
+          setPending(false);
+        }
+      }
+    }
+
+    fetchDataAndFormat();
+
+    return () => {
+      isActive = false;
+    };
+  }, [accessToken, refreshToken, module, size]);
+
+  useEffect(() => {
+    setFilteredTableData(
+      filterSearch(
         defColumns,
         tableData,
         filterText,
@@ -176,173 +262,26 @@ export const BaseDatatable = ({
         restorations,
         selectedResearchs,
         researchs,
-      );
-    };
-    /*const WithRestoration = (tableData) => {
-      return tableData.filter((item) => item.restoration_info === true);
-    };*/
-
-    if (!hasFetched) {
-      const fetchDataAndFormat = async () => {
-        try {
-          let fetch;
-          let first;
-          if (dataQuery.length === 0 || pending) {
-            fetch = await fetchData(accessToken, refreshToken);
-            // console.log(fetch);
-            setDataQuery(fetch);
-            first = true;
-            setPending(false);
-          } else {
-            fetch = dataQuery;
-            first = false;
-            setPending(false);
-          }
-
-          let arrayTabColOut;
-          // const module = "Research"
-          if (first) {
-            arrayTabColOut = formatData(fetch, size, module, true, null, null);
-            //setFilteredTableData(arrayTabColOut[0]);
-          } else {
-            arrayTabColOut = formatData(
-              dataQuery,
-              size,
-              module,
-              false,
-              defColumns,
-              tableData,
-            );
-          }
-
-          // Guardar en estado local y actualizar referencias
-          setTableData(arrayTabColOut[0]);
-          setDefColumnsOut(arrayTabColOut[2]);
-          setRestorations(arrayTabColOut[3]);
-          setResearchs(arrayTabColOut[4]);
-          // setArrayTabColOutState(arrayTabColOut); // Guardar en estado local
-
-          // Actualizar almacenamiento local si es necesario
-          const getdefColumn = localStorage.getItem("showColumnsInventory");
-          if (getdefColumn === null || getdefColumn === "undefined") {
-            //console.log('null');
-            console.log("defColumns", arrayTabColOut[1]);
-            setDefColumns(arrayTabColOut[1]);
-            setDefColumnsOut(arrayTabColOut[2]);
-            localStorage.setItem(
-              "showColumnsInventory",
-              JSON.stringify(arrayTabColOut[1]),
-            );
-          } else {
-            //    console.log('not null');
-            const savedColumns = JSON.parse(getdefColumn);
-            const tdefColumn = arrayTabColOut[1];
-            tdefColumn.forEach((column, index) => {
-              column.show = savedColumns[index].show;
-              if (!savedColumns[index].show) {
-                column.omit = true;
-              }
-            });
-            //console.log("defColumns", tdefColumn);
-            setDefColumns(tdefColumn);
-            const Cout = ConstructElementsToHide(tdefColumn, size);
-            setDefColumnsOut(Cout);
-          }
-        } catch (error) {
-          console.error("Error al procesar los datos:", error);
-        }
-      };
-
-      fetchDataAndFormat();
-
-      setHasFetched(true);
-    }
-    setFilteredTableData(filtered());
-
-    // Inicializar checkboxValues con valores predeterminados
-    // aqui podemos hacer un guardado de localstorage para traer los datos locales
-    // de que columnas se muestran
-    const Values = {};
-    //const initialValuesSearch = {};
-    defColumns.forEach((element) => {
-      if (!element.show) {
-        Values[element.id] = false;
-        // initialValuesSearch[element.id] = false;
-      } else {
-        Values[element.id] = true;
-        //initialValuesSearch[element.id] = false;
-      }
-    });
-    setCheckboxValues(Values);
-    // setCheckboxSearchValues(initialValuesSearch);
-    //filtered();
-    // Si cambian ciertas dependencias clave, reiniciar el estado
-    return () => {
-      // setHasFetched(false);
-    };
+      ),
+    );
   }, [
-    accessToken,
-    refreshToken,
-    size,
-    hasFetched,
-    dataQuery,
-    checkboxSearchValues,
-    disableChecks,
+    defColumns,
+    tableData,
     filterText,
     rm_accents,
     upper_lower,
     wordComplete,
-    setTableData,
-    setDefColumns,
+    checkboxSearchValues,
+    disableChecks,
     selected,
+    restorations,
     selectedResearchs,
+    researchs,
   ]);
 
   useEffect(() => {
-    if (dataQuery.length > 0) {
-      const arrayTabColOut = formatData(
-        dataQuery,
-        size,
-        module,
-        false,
-        defColumns,
-        tableData,
-      );
-
-      setTableData(arrayTabColOut[0]);
-      setDefColumnsOut(arrayTabColOut[2]);
-      // setArrayTabColOutState(arrayTabColOut); // Guardar en estado local
-
-      // Actualizar almacenamiento local si es necesario
-      const getdefColumn = localStorage.getItem("showColumnsInventory");
-      if (getdefColumn === null || getdefColumn === "undefined") {
-        //console.log('null');
-        console.log("defColumns 2", arrayTabColOut[1]);
-        setDefColumns(arrayTabColOut[1]);
-        //setDefColumnsOut(arrayTabColOut[2]);
-        localStorage.setItem(
-          "showColumnsInventory",
-          JSON.stringify(arrayTabColOut[1]),
-        );
-      } else {
-        //    console.log('not null');
-        const savedColumns = JSON.parse(getdefColumn);
-        const tdefColumn = arrayTabColOut[1];
-        tdefColumn.forEach((column, index) => {
-          //console.log(savedColumns[index]);
-          column.show = savedColumns[index].show;
-          if (!savedColumns[index].show) {
-            column.omit = true;
-          }
-        });
-        //console.log("defColumns 2", tdefColumn);
-        setDefColumns(tdefColumn);
-        const Cout = ConstructElementsToHide(tdefColumn, size);
-        setDefColumnsOut(Cout);
-      }
-    }
-    // console.log("loop infinito");
-  }, [checkboxValues]);
+    setCheckboxValues(buildCheckboxValues(defColumns));
+  }, [defColumns]);
 
   /*****************************************************************************
    *****************************************************************************/
