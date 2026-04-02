@@ -38,7 +38,7 @@ export const API_RequestMovementNew = async ({
   refreshToken,
 }) => {
   const url =
-    SETTINGS.URL_ADDRESS.server_api_commands + "authenticated/movements/new/";
+    SETTINGS.URL_ADDRESS.server_api_commands + "authenticated/movements/manage/new/";
 
   try {
     const response = await fetchWithAuth(
@@ -70,7 +70,7 @@ export const API_CreateMovement = async ({
   payload,
 }) => {
   const url =
-    SETTINGS.URL_ADDRESS.server_api_commands + "authenticated/movements/insert/";
+    SETTINGS.URL_ADDRESS.server_api_commands + "authenticated/movements/manage/new/";
 
   try {
     const response = await fetchWithAuth(

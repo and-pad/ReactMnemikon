@@ -14,13 +14,13 @@ const ActionsCell = ({ data }) => {
 
   const handleStep = (step) => {
     if (step === "edit") {
-      navigate(`/mnemosine/movements/edit/${data.id}`);
+      navigate(`/mnemosine/movements/manage/edit/${data.id}`);
     } else if (step === "select-pieces") {
-      navigate(`/mnemosine/movements/select-pieces/${data.id}`);
+      navigate(`/mnemosine/movements/manage/select-pieces/${data.id}`);
     } else if (step === "info") {
-      navigate(`/mnemosine/movements/info/${data.id}`);
+      navigate(`/mnemosine/movements/manage/info/${data.id}`);
     } else if (step === "return-pieces") {
-      navigate(`/mnemosine/movements/return-pieces/${data.id}`);
+      navigate(`/mnemosine/movements/manage/return-pieces/${data.id}`);
     }
   };
 
