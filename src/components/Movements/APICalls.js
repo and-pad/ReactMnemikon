@@ -1,4 +1,5 @@
 import SETTINGS from "../Config/settings";
+import { fetchWithAuth } from "../LoginComponents/handleLogin";
 
 export const API_RequestMovements = async ({
   accessToken,
@@ -6,28 +7,28 @@ export const API_RequestMovements = async ({
   page,
   rowsPerPage,
   filterText,
-
 }) => {
-  console.log("accessToken in APICalls", accessToken);
   const url =
     SETTINGS.URL_ADDRESS.server_api_commands +
     `authenticated/movements/manage?page=${page}&per_page=${rowsPerPage}&search=${encodeURIComponent(filterText || "")}`;
+
   try {
-    const response = await fetch(url, {
-      method: "GET",
-      headers: {
-          
-          'Authorization': `Bearer ${accessToken}`
+    const response = await fetchWithAuth(
+      url,
+      {
+        method: "GET",
       },
-    });
+      { accessToken, refreshToken }
+    );
+
     if (response.ok) {
       return await response.json();
     }
-    return response.json();
-    } catch (e) {
+
+    return await response.json();
+  } catch (e) {
     console.log("in api call catch");
     console.error(e);
-
     return false;
   }
 };
@@ -38,18 +39,24 @@ export const API_RequestMovementNew = async ({
 }) => {
   const url =
     SETTINGS.URL_ADDRESS.server_api_commands + "authenticated/movements/new/";
+
   try {
-    const response = await fetch(url, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
+    const response = await fetchWithAuth(
+      url,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
       },
-    });
+      { accessToken, refreshToken }
+    );
+
     if (response.ok) {
       return await response.json();
     }
-    return response.json();
+
+    return await response.json();
   } catch (e) {
     console.log("in api call catch");
     console.error(e);
@@ -64,19 +71,25 @@ export const API_CreateMovement = async ({
 }) => {
   const url =
     SETTINGS.URL_ADDRESS.server_api_commands + "authenticated/movements/insert/";
+
   try {
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
+    const response = await fetchWithAuth(
+      url,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
       },
-      body: JSON.stringify(payload),
-    });
+      { accessToken, refreshToken }
+    );
+
     if (response.ok) {
       return await response.json();
     }
-    return response.json();
+
+    return await response.json();
   } catch (e) {
     console.log("in api call catch");
     console.error(e);

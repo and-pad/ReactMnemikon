@@ -71,14 +71,14 @@ const MovementMultiSelectField = ({
         getOptionLabel={(option) =>
           typeof option === "string" ? option : option?.[optionLabel] || ""
         }
-        renderTags={(selected, getTagProps) =>
+        renderValue={(selected, getItemProps) =>
           selected.map((item, index) => {
-            const { key, ...tagProps } = getTagProps({ index });
+            const { key, ...itemProps } = getItemProps({ index });
             return (
               <Chip
                 key={item?._id ?? item?.id ?? `${label}-${index}`}
                 label={item?.[optionLabel] || ""}
-                {...tagProps}
+                {...itemProps}
               />
             );
           })
@@ -148,11 +148,11 @@ export const NewMovement = ({ accessToken, refreshToken, permissions }) => {
         const venues = normalizeList(data?.venues || data?.sedes || []);
         const internalInstitution = normalizeItem(
           data?.internal_institution ||
-            data?.internalInstitution ||
-            institutions.find((item) => Number(item.id ?? item._id) === 1) || {
-              id: 1,
-              name: "Institución interna",
-            },
+          data?.internalInstitution ||
+          institutions.find((item) => Number(item.id ?? item._id) === 1) || {
+            id: 1,
+            name: "Institución interna",
+          },
         );
 
         setCatalogs({
@@ -223,8 +223,8 @@ export const NewMovement = ({ accessToken, refreshToken, permissions }) => {
       return [
         String(
           formData.internal_institution_id?._id ??
-            formData.internal_institution_id?.id ??
-            "",
+          formData.internal_institution_id?.id ??
+          "",
         ),
       ];
     }
