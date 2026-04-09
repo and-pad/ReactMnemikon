@@ -107,7 +107,7 @@ function omitingElements(size, hideConstructor, defColumns, module) {
     quitElements = (quitElements + 1) * -1;
     let slice_elements = -2;
     //Query no tiene Actions solo muestra la foto -2 por foto y actions
-    if (module === "Query") {
+    if (module === "Query" || module === "MovementPieces") {
       slice_elements = -1;
     }
     out = hideConstructor.slice(quitElements, slice_elements); // Elementos que están fuera del tamaño

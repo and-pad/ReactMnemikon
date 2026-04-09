@@ -24,7 +24,7 @@ import Datatable from "react-data-table-component";
 import { CircularIndeterminate } from "./to-delete_datatableBase";
 import { ExpandableComponent } from "./DatatableComponents/datatableComponents";
 import customStyles from "./datatableCustomCellStyle";
-import { ConstructElementsToHide } from "./dataHandler";
+import { ConstructElementsToHide, formatData } from "./dataHandler";
 import { useSessionStorageState } from "./DatatableComponents/SessionStorage";
 import { useNavigate } from "react-router-dom";
 import { getTranslations } from "../Languages/i18n";
@@ -36,6 +36,7 @@ import { createTheme } from "react-data-table-component";
 
 const langData = getTranslations();
 const COLUMN_STORAGE_KEY = "showColumnsInventory";
+const EMPTY_COLUMNS = [];
 
 createTheme("custom-dark", {
   text: {
@@ -111,12 +112,12 @@ function buildCheckboxValues(columns) {
   return values;
 }
 
-function resolveColumnState(baseColumns, module, size) {
+function resolveColumnState(baseColumns, module, size, storageKey = COLUMN_STORAGE_KEY) {
   const columns = baseColumns.map((column) => ({ ...column }));
-  const storedColumns = localStorage.getItem(COLUMN_STORAGE_KEY);
+  const storedColumns = localStorage.getItem(storageKey);
 
   if (!storedColumns || storedColumns === "undefined") {
-    localStorage.setItem(COLUMN_STORAGE_KEY, JSON.stringify(columns));
+    localStorage.setItem(storageKey, JSON.stringify(columns));
 
     return {
       defColumns: columns,
@@ -139,7 +140,7 @@ function resolveColumnState(baseColumns, module, size) {
     });
   } catch (error) {
     console.error("Error al restaurar la configuración de columnas:", error);
-    localStorage.setItem(COLUMN_STORAGE_KEY, JSON.stringify(columns));
+    localStorage.setItem(storageKey, JSON.stringify(columns));
   }
 
   return {
@@ -157,6 +158,15 @@ export const BaseDatatable = ({
   module,
   title,
   permissions,
+  customData = null,
+  prependColumns = EMPTY_COLUMNS,
+  appendColumns = EMPTY_COLUMNS,
+  headerActions = null,
+  selectableRows = false,
+  selectableRowSelected = null,
+  onSelectedRowsChange = null,
+  clearSelectedRows = false,
+  columnStorageKey = COLUMN_STORAGE_KEY,
 }) => {
   const [defColumns, setDefColumns] = useState([]);
   const [tableData, setTableData] = useState([]);
@@ -277,18 +287,40 @@ export const BaseDatatable = ({
 
       try {
         setPending(true);
-        const snapshot = await loadDatatableSnapshot({
-          accessToken,
-          refreshToken,
-          module,
-          size,
-        });
+        const snapshot = Array.isArray(customData)
+          ? (() => {
+              const formattedData = formatData(customData, size, module, true, null, null);
+
+              return {
+                tableData: formattedData[0],
+                defColumns: formattedData[1],
+                defColumnsOut: formattedData[2] ?? [],
+                restorations: formattedData[3] ?? [],
+                researchs: formattedData[4] ?? [],
+              };
+            })()
+          : await loadDatatableSnapshot({
+              accessToken,
+              refreshToken,
+              module,
+              size,
+            });
 
         if (!isActive) {
           return;
         }
 
-        const columnState = resolveColumnState(snapshot.defColumns, module, size);
+        const customColumns = [
+          ...prependColumns.map((column) => ({ ...column })),
+          ...snapshot.defColumns.map((column) => ({ ...column })),
+          ...appendColumns.map((column) => ({ ...column })),
+        ];
+        const columnState = resolveColumnState(
+          customColumns,
+          module,
+          size,
+          columnStorageKey,
+        );
 
         setTableData(snapshot.tableData);
         setDefColumns(columnState.defColumns);
@@ -311,7 +343,16 @@ export const BaseDatatable = ({
     return () => {
       isActive = false;
     };
-  }, [accessToken, refreshToken, module, size]);
+  }, [
+    accessToken,
+    refreshToken,
+    module,
+    size,
+    customData,
+    prependColumns,
+    appendColumns,
+    columnStorageKey,
+  ]);
 
   useEffect(() => {
     setFilteredTableData(
@@ -407,7 +448,7 @@ export const BaseDatatable = ({
         setDefColumnsOut([]);
         //esto es necesario para guardar el selector que es una funcion, como cadena
         localStorage.setItem(
-          "showColumnsInventory",
+          columnStorageKey,
           JSON.stringify(updatedColumns),
         );
       }
@@ -431,7 +472,7 @@ export const BaseDatatable = ({
           setDefColumns(updatedColumns);
           setDefColumnsOut(out);
           localStorage.setItem(
-            "showColumnsInventory",
+            columnStorageKey,
             JSON.stringify(updatedColumns),
           );
         });
@@ -593,6 +634,7 @@ export const BaseDatatable = ({
     size,
     module,
     selected,
+    columnStorageKey,
   ]);
 
   const handleSelectionResearch = (event, newValue) => {
@@ -757,6 +799,8 @@ export const BaseDatatable = ({
             </Button>
           </>
         )}
+
+        {headerActions}
       </Box>
 {/* NOTE:
 // react-data-table-component legacy workaround
@@ -820,6 +864,10 @@ export const BaseDatatable = ({
             </Box>
           }
           highlightOnHover
+          selectableRows={selectableRows}
+          selectableRowSelected={selectableRowSelected ?? undefined}
+          onSelectedRowsChange={onSelectedRowsChange ?? undefined}
+          clearSelectedRows={clearSelectedRows}
           expandableRows
           expandableRowsComponent={ExpandableComponent}
           expandableRowsComponentProps={propsColumns}

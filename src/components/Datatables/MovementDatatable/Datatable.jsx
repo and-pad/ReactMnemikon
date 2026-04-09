@@ -24,8 +24,6 @@ const ActionsCell = ({ data }) => {
     }
   };
 
-  console.log("Value en ActionsCell _id", data.id);
-
   return (
     <div>
       {data.authorized_by_movements ? null : (
@@ -134,7 +132,6 @@ export function MovementDatatable({ accessToken, refreshToken }) {
   useEffect(() => {
     API_RequestMovements({ accessToken, refreshToken, page, rowsPerPage, filterText })
       .then((data) => {
-        console.log("data en useEffect", data);
         setData(data.data);
         setTotalRows(data.total);
         setPending(false);
@@ -170,8 +167,6 @@ export function MovementDatatable({ accessToken, refreshToken }) {
     );
   }, [filterText]);
 
-  console.log("Data en render", Data);
-
   return (
     <div className="container-fluid" style={{ width: "100%" }}>
       <Button
@@ -198,13 +193,10 @@ export function MovementDatatable({ accessToken, refreshToken }) {
             paginationDefaultPage={page}
             onChangePage={(page) => {
               setPage(page);
-              console.log("Page en onChangePage", page);
             }}
             onChangeRowsPerPage={(newPerPage, page) => {
               setRowsPerPage(newPerPage);
               setPage(page);
-              console.log("Rows per page en onChangeRowsPerPage", newPerPage);
-              console.log("Page en onChangeRowsPerPage", page);
             }}
             subHeader
             subHeaderComponent={subHeaderComponentMemo}

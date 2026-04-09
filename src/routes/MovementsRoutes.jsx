@@ -19,6 +19,12 @@ const EditMovement = lazy(() =>
   })),
 );
 
+const SelectMovementPieces = lazy(() =>
+  import("../components/Movements/select-pieces").then((module) => ({
+    default: module.SelectMovementPieces,
+  })),
+);
+
 export const movementsRoutes = [
   {
     path: "movements/manage",
@@ -31,5 +37,9 @@ export const movementsRoutes = [
   {
     path: "movements/manage/edit/:id",
     element: <ProtectedRouteElement component={EditMovement} />,
+  },
+  {
+    path: "movements/manage/select-pieces/:id",
+    element: <ProtectedRouteElement component={SelectMovementPieces} />,
   },
 ];

@@ -166,3 +166,36 @@ export const API_RequestMovementVenues = async ({
 
   return requestWithAuth({ accessToken, refreshToken, url });
 };
+
+export const API_RequestMovementPieces = async ({
+  accessToken,
+  refreshToken,
+  movementId,
+}) => {
+  const url =
+    SETTINGS.URL_ADDRESS.server_api_commands +
+    `authenticated/movements/manage/${movementId}/pieces/`;
+
+  return requestWithAuth({ accessToken, refreshToken, url });
+};
+
+export const API_SaveMovementPieces = async ({
+  accessToken,
+  refreshToken,
+  movementId,
+  pieceIds,
+}) => {
+  const url =
+    SETTINGS.URL_ADDRESS.server_api_commands +
+    `authenticated/movements/manage/${movementId}/select-pieces/`;
+
+  return requestWithAuth({
+    accessToken,
+    refreshToken,
+    url,
+    method: "POST",
+    payload: {
+      piece_ids: pieceIds || [],
+    },
+  });
+};

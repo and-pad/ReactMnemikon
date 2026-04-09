@@ -133,6 +133,7 @@ export const filterSearch = (
       .filter((item) => item.show)
       .filter(
         (item) =>
+          !item.excludeFromSearch &&
           item.id !== "actions_inventory" &&
           item.id !== "actions_research" &&
           item.id !== "actions_restoration" &&
@@ -193,6 +194,7 @@ export const SearchBox = ({
       //  console.log('is', ishecked);
       if (
         element.show &&
+        !element.excludeFromSearch &&
         element.id !== "photo_thumb_info" &&
         element.id !== "actions_restoration" &&
         element.id !== "actions_inventory" &&
@@ -410,6 +412,7 @@ export const SelectColumn = ({ handleChange, columns, checkboxValues }) => {
     const isChecked = checkboxValues[element.id] || false;
     //console.log("element", element);
     if (
+      !element.excludeFromColumnSelector &&
       element.name !== "_id" &&
       element.id !== "photo_thumb_info" &&
       element.id !== "actions_restoration" &&
