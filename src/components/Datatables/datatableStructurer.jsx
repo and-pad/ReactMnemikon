@@ -168,6 +168,7 @@ export const BaseDatatable = ({
   clearSelectedRows = false,
   columnStorageKey = COLUMN_STORAGE_KEY,
 }) => {
+  const [baseColumns, setBaseColumns] = useState([]);
   const [defColumns, setDefColumns] = useState([]);
   const [tableData, setTableData] = useState([]);
 
@@ -310,21 +311,8 @@ export const BaseDatatable = ({
           return;
         }
 
-        const customColumns = [
-          ...prependColumns.map((column) => ({ ...column })),
-          ...snapshot.defColumns.map((column) => ({ ...column })),
-          ...appendColumns.map((column) => ({ ...column })),
-        ];
-        const columnState = resolveColumnState(
-          customColumns,
-          module,
-          size,
-          columnStorageKey,
-        );
-
         setTableData(snapshot.tableData);
-        setDefColumns(columnState.defColumns);
-        setDefColumnsOut(columnState.defColumnsOut);
+        setBaseColumns(snapshot.defColumns);
         setRestorations(snapshot.restorations);
         setResearchs(snapshot.researchs);
       } catch (error) {
@@ -349,9 +337,34 @@ export const BaseDatatable = ({
     module,
     size,
     customData,
-    prependColumns,
+  ]);
+
+  useEffect(() => {
+    if (size === null) {
+      return;
+    }
+
+    const customColumns = [
+      ...prependColumns.map((column) => ({ ...column })),
+      ...baseColumns.map((column) => ({ ...column })),
+      ...appendColumns.map((column) => ({ ...column })),
+    ];
+    const columnState = resolveColumnState(
+      customColumns,
+      module,
+      size,
+      columnStorageKey,
+    );
+
+    setDefColumns(columnState.defColumns);
+    setDefColumnsOut(columnState.defColumnsOut);
+  }, [
     appendColumns,
+    baseColumns,
     columnStorageKey,
+    module,
+    prependColumns,
+    size,
   ]);
 
   useEffect(() => {

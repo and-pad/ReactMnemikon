@@ -199,3 +199,99 @@ export const API_SaveMovementPieces = async ({
     },
   });
 };
+
+export const API_RequestMovementInfo = async ({
+  accessToken,
+  refreshToken,
+  movementId,
+}) => {
+  const url =
+    SETTINGS.URL_ADDRESS.server_api_commands +
+    `authenticated/movements/manage/${movementId}/info/`;
+
+  return requestWithAuth({ accessToken, refreshToken, url });
+};
+
+export const API_AuthorizeMovement = async ({
+  accessToken,
+  refreshToken,
+  movementId,
+}) => {
+  const url =
+    SETTINGS.URL_ADDRESS.server_api_commands +
+    `authenticated/movements/manage/${movementId}/authorize/`;
+
+  return requestWithAuth({
+    accessToken,
+    refreshToken,
+    url,
+    method: "POST",
+  });
+};
+
+export const API_RejectMovement = async ({
+  accessToken,
+  refreshToken,
+  movementId,
+}) => {
+  const url =
+    SETTINGS.URL_ADDRESS.server_api_commands +
+    `authenticated/movements/manage/${movementId}/reject/`;
+
+  return requestWithAuth({
+    accessToken,
+    refreshToken,
+    url,
+    method: "POST",
+  });
+};
+
+export const API_UpdateMovementProrogation = async ({
+  accessToken,
+  refreshToken,
+  prorogationId,
+  payload,
+}) => {
+  const url =
+    SETTINGS.URL_ADDRESS.server_api_commands +
+    `authenticated/movements/manage/prorogations/${prorogationId}/`;
+
+  return requestWithAuth({
+    accessToken,
+    refreshToken,
+    url,
+    method: "PUT",
+    payload,
+  });
+};
+
+export const API_RequestMovementReturnPieces = async ({
+  accessToken,
+  refreshToken,
+  movementId,
+}) => {
+  const url =
+    SETTINGS.URL_ADDRESS.server_api_commands +
+    `authenticated/movements/manage/${movementId}/return-pieces/`;
+
+  return requestWithAuth({ accessToken, refreshToken, url });
+};
+
+export const API_SaveMovementReturnPieces = async ({
+  accessToken,
+  refreshToken,
+  movementId,
+  payload,
+}) => {
+  const url =
+    SETTINGS.URL_ADDRESS.server_api_commands +
+    `authenticated/movements/manage/${movementId}/return-pieces/`;
+
+  return requestWithAuth({
+    accessToken,
+    refreshToken,
+    url,
+    method: "POST",
+    payload,
+  });
+};

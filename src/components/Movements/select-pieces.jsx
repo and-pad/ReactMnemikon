@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   Alert,
@@ -11,6 +11,7 @@ import {
   Typography,
 } from "@mui/material";
 import { BaseDatatable } from "../Datatables/datatableStructurer";
+import { loadRawDatatableData } from "../Datatables/datatableDataCache";
 import {
   API_RequestMovementPieces,
   API_SaveMovementPieces,
@@ -40,14 +41,14 @@ export const SelectMovementPieces = ({ accessToken, refreshToken }) => {
   const [saving, setSaving] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
-  const selectedPieceIdsRef = useRef({});
-
-  useEffect(() => {
-    selectedPieceIdsRef.current = selectedPieceIds;
-  }, [selectedPieceIds]);
 
   useEffect(() => {
     let active = true;
+    if (!accessToken) {
+      return () => {
+        active = false;
+      };
+    }
 
     API_RequestMovementPieces({
       accessToken,
@@ -57,7 +58,6 @@ export const SelectMovementPieces = ({ accessToken, refreshToken }) => {
       .then((data) => {
         if (!active) return;
 
-        const nextPieces = Array.isArray(data?.pieces) ? data.pieces : [];
         const nextSelectedIds = Array.isArray(data?.selected_piece_ids)
           ? data.selected_piece_ids.reduce((accumulator, pieceId) => {
               accumulator[String(pieceId)] = true;
@@ -65,7 +65,6 @@ export const SelectMovementPieces = ({ accessToken, refreshToken }) => {
             }, {})
           : {};
 
-        setPieces(nextPieces);
         setSelectedPieceIds(nextSelectedIds);
         setErrorMsg("");
       })
@@ -84,6 +83,34 @@ export const SelectMovementPieces = ({ accessToken, refreshToken }) => {
       active = false;
     };
   }, [accessToken, refreshToken, id]);
+
+  useEffect(() => {
+    let active = true;
+
+    if (!accessToken) {
+      return () => {
+        active = false;
+      };
+    }
+
+    loadRawDatatableData({
+      accessToken,
+      refreshToken,
+    })
+      .then((result) => {
+        if (!active) return;
+        setPieces(Array.isArray(result?.data) ? result.data : []);
+      })
+      .catch((error) => {
+        console.error("Error al cargar el catálogo de piezas", error);
+        if (!active) return;
+        setErrorMsg("No fue posible cargar el catálogo de piezas.");
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [accessToken, refreshToken]);
 
   const selectedPieces = useMemo(() => {
     const selectedIds = new Set(
@@ -119,17 +146,19 @@ export const SelectMovementPieces = ({ accessToken, refreshToken }) => {
 
           return (
             <Checkbox
-              checked={Boolean(selectedPieceIdsRef.current[pieceId])}
+              checked={Boolean(selectedPieceIds[pieceId])}
               onChange={() => togglePiece(pieceId)}
-              inputProps={{
-                "aria-label": `Seleccionar pieza ${pieceId}`,
+              slotProps={{
+                input: {
+                  "aria-label": `Seleccionar pieza ${pieceId}`,
+                },
               }}
             />
           );
         },
       },
     ],
-    [],
+    [selectedPieceIds],
   );
 
   const handleSave = async () => {
@@ -164,6 +193,10 @@ export const SelectMovementPieces = ({ accessToken, refreshToken }) => {
       }, {}),
     );
     setSuccessMsg("La selección de piezas se guardó correctamente.");
+
+    setTimeout(() => {
+      navigate(`/mnemosine/movements/manage/`);
+    }, 3000);
   };
 
   const headerActions = (
@@ -242,7 +275,6 @@ export const SelectMovementPieces = ({ accessToken, refreshToken }) => {
         refreshToken={refreshToken}
         module="MovementPieces"
         title="Listado de piezas"
-        customData={pieces}
         prependColumns={selectionColumn}
         headerActions={headerActions}
         columnStorageKey={`showColumnsMovementPieces-${id}`}

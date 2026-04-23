@@ -7,8 +7,24 @@ const langData = getTranslations();
 
 
 const CustomCell = ({ row, column }) => {
-    const value = row[column];
-    
+    let value = row[column];
+    //console.log(row[column]);
+    //console.log("column", column);
+    if( column === "location_info"){
+        console.log("value", value);
+        console.log("array is array",(Array.isArray(value) && value.length === 0));
+        if (value === null || value === undefined || value === "" || (
+        Array.isArray(value) &&
+        (
+            value.length === 0 ||
+            value.every(v => v == null || v === "")
+        )
+    )) {
+        value = "en prestamo";
+        }
+
+
+    }
     let text;
 
     /*if (column === 'publications'){

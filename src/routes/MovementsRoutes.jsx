@@ -25,6 +25,18 @@ const SelectMovementPieces = lazy(() =>
   })),
 );
 
+const InfoMovement = lazy(() =>
+  import("../components/Movements/info").then((module) => ({
+    default: module.InfoMovement,
+  })),
+);
+
+const ReturnMovementPieces = lazy(() =>
+  import("../components/Movements/pieces_return").then((module) => ({
+    default: module.ReturnMovementPieces,
+  })),
+);
+
 export const movementsRoutes = [
   {
     path: "movements/manage",
@@ -41,5 +53,13 @@ export const movementsRoutes = [
   {
     path: "movements/manage/select-pieces/:id",
     element: <ProtectedRouteElement component={SelectMovementPieces} />,
+  },
+  {
+    path: "movements/manage/info/:id",
+    element: <ProtectedRouteElement component={InfoMovement} />,
+  },
+  {
+    path: "movements/manage/return-pieces/:id",
+    element: <ProtectedRouteElement component={ReturnMovementPieces} />,
   },
 ];

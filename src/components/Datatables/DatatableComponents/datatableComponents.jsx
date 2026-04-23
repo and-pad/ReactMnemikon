@@ -19,9 +19,30 @@ export const ExpandableComponent = (props) => {
         props.defColumnsOut.forEach((element, index) => {
             // Lógica para renderizar contenido...
             const isTagsColumn = element.id === 'tags';
+            const isLocationInfoColumn = element.id === 'location_info';
+
+            const locationValue = props.data[element.id];
+
+            const isEmptyLocation =
+                locationValue == null ||
+                locationValue === "" ||
+                (
+                    Array.isArray(locationValue) &&
+                    (
+                        locationValue.length === 0 ||
+                        locationValue.every(v => v == null || v === "")
+                    )
+                );
+
+
+
+
             const arrayElements = isTagsColumn
                 ? props.data[element.id]?.split(',') || []
                 : [];
+
+
+
 
             content.push(
                 <div
@@ -52,7 +73,25 @@ export const ExpandableComponent = (props) => {
                                 </div>
                             ))}
                         </div>
-                    ) : (
+                    ) : isLocationInfoColumn ? (
+                                            <div
+                                                style={{
+                                                    fontFamily: 'Asap Condensed, sans-serif',
+                                                    fontSize: '1em',
+                                                    color: '#19191a',
+                                                    fontWeight: "bolder"
+                                                }}
+                                            >
+                                                {isEmptyLocation
+                                                    ? "en prestamo"
+                                                    : Array.isArray(locationValue)
+                                                        ? locationValue.join(", ")
+                                                        : locationValue}
+                                            </div>
+                                        )
+                        :
+                    
+                    (
                         <div
                             
                             style={{ fontFamily: 'Asap Condensed, sans-serif', fontSize: '1em', color: '#19191a', fontWeight: "bolder" }}

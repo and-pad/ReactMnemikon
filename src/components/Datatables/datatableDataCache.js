@@ -77,6 +77,18 @@ async function getRawData(accessToken, refreshToken) {
   };
 }
 
+export async function loadRawDatatableData({
+  accessToken,
+  refreshToken,
+}) {
+  const rawData = await getRawData(accessToken, refreshToken);
+
+  return {
+    data: cloneRows(rawData.data),
+    shouldRefreshSnapshots: rawData.shouldRefreshSnapshots,
+  };
+}
+
 export async function loadDatatableSnapshot({
   accessToken,
   refreshToken,
