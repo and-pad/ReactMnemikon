@@ -27,43 +27,71 @@ function push_data(orderedData, column) {
 
 function push_array_data(orderedData, column) {
   var data_c = [];
-
-  //console.log(orderedData['title']);
   var column_c;
-  //console.log(column);
+
   if (column === "research_info") {
-    //Del objeto orderedData extraemos la info de research_info
+    // Del objeto orderedData extraemos la info de research_info
     for (var i = 0; i < research_keys.length; i++) {
       column_c = research_keys[i];
       data_c.push(push_data(orderedData[column_c], research_keys[i]));
     }
     return data_c;
+
   } else if (column === "location_info") {
-    column_c = "name";
+    // Si no hay ubicación, mostrar "en prestamo"
+    const value = orderedData?.name;
+
+    if (value != null && value !== "") {
+      data_c.push(value);
+    } else {
+      data_c.push("en prestamo");
+    }
+
+    data_c.push(column);
+    return data_c;
+
   } else if (column === "authors_info") {
     if (orderedData && orderedData.length > 0 && "title" in orderedData[0]) {
       data_c.push(orderedData[0]["title"]);
     }
+    data_c.push(column);
+    return data_c;
+
   } else if (column === "involved_creation_info") {
     if (orderedData && orderedData.length > 0 && "title" in orderedData[0]) {
       data_c.push(orderedData[0]["title"]);
     }
+    data_c.push(column);
+    return data_c;
+
   } else if (column === "period_info") {
     if (orderedData && orderedData.length > 0 && "title" in orderedData[0]) {
       data_c.push(orderedData[0]["title"]);
-      //   console.log(orderedData[0]['title']);
     }
-  } else if (column === "photo_thumb_info") {
-    //  console.log('aqui si entra', orderedData);
+    data_c.push(column);
+    return data_c;
 
+  } else if (column === "photo_thumb_info") {
     if (orderedData && "file_name" in orderedData) {
       data_c.push(orderedData["file_name"]);
-      //       console.log('si', orderedData['file_name']);
     }
+    data_c.push(column);
+    return data_c;
+
   } else {
     column_c = "title";
   }
-  data_c.push(orderedData[column_c]);
+
+  // Corrección general para evitar undefined/null
+  if (
+    orderedData &&
+    column_c &&
+    orderedData[column_c] != null &&
+    orderedData[column_c] !== ""
+  ) {
+    data_c.push(orderedData[column_c]);
+  }
+
   data_c.push(column);
 
   return data_c;

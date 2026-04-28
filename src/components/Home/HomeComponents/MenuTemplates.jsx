@@ -91,6 +91,7 @@ export function TopNavBar({ user, permissions, handleLogout }) {
                                         <li><Link to='/mnemosine/movements/search' className="dropdown-item" >{langData.StartMenu.search}</Link></li>
                                         <li><Link to='/mnemosine/movements/institutions' className="dropdown-item" >{langData.StartMenu.institutions}</Link></li>
                                         <li><Link to='/mnemosine/movements/contacts' className="dropdown-item" >{langData.StartMenu.contacts}</Link></li>
+                                        <li><Link to='/mnemosine/movements/exhibitions' className="dropdown-item" >{langData.StartMenu.expositions}</Link></li>
                                         <li><Link to='/mnemosine/movements/venues' className="dropdown-item" >{langData.StartMenu.venues}</Link></li>
 
                                     </ul>

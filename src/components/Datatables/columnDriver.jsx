@@ -13,13 +13,7 @@ const CustomCell = ({ row, column }) => {
     if( column === "location_info"){
         console.log("value", value);
         console.log("array is array",(Array.isArray(value) && value.length === 0));
-        if (value === null || value === undefined || value === "" || (
-        Array.isArray(value) &&
-        (
-            value.length === 0 ||
-            value.every(v => v == null || v === "")
-        )
-    )) {
+        if (value === null || value === undefined || value === "" ) {
         value = "en prestamo";
         }
 
