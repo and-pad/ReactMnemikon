@@ -25,6 +25,12 @@ const ViewReport = lazy(() =>
   })),
 );
 
+const ReportPdfPreview = lazy(() =>
+  import("../components/Reports/pdf-preview").then((module) => ({
+    default: module.ReportPdfPreview,
+  })),
+);
+
 export const reportsRoutes = [
   {
     path: "reports",
@@ -41,5 +47,9 @@ export const reportsRoutes = [
   {
     path: "reports/view/:id",
     element: <ProtectedRouteElement component={ViewReport} />,
+  },
+  {
+    path: "reports/view/:id/pdf-preview",
+    element: <ProtectedRouteElement component={ReportPdfPreview} />,
   },
 ];

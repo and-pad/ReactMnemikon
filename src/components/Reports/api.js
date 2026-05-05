@@ -67,10 +67,15 @@ export const API_RequestReportPreview = async ({
   accessToken,
   refreshToken,
   reportId,
+  selectedPieceIds = [],
 }) => {
+  const params = new URLSearchParams();
+  if (selectedPieceIds.length) {
+    params.set("selected_piece_ids", selectedPieceIds.join(","));
+  }
   const url =
     SETTINGS.URL_ADDRESS.server_api_commands +
-    `authenticated/reports/${reportId}/preview/`;
+    `authenticated/reports/${reportId}/preview/${params.toString() ? `?${params.toString()}` : ""}`;
 
   return requestWithAuth({ accessToken, refreshToken, url });
 };
