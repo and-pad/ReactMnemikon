@@ -275,6 +275,7 @@ export const SelectMovementPieces = ({ accessToken, refreshToken }) => {
         refreshToken={refreshToken}
         module="MovementPieces"
         title="Listado de piezas"
+        customData={pieces}
         prependColumns={selectionColumn}
         headerActions={headerActions}
         columnStorageKey={`showColumnsMovementPieces-${id}`}

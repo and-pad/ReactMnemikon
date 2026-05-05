@@ -9,6 +9,7 @@ import { pieceQueriesRoutes } from "./PieceQueriesRoutes";
 import { piecesPendingListRoutes } from "./PiecesPendingListRoutes";
 import { researchQueriesActionsRoutes } from "./ResearchQueriesActionsRoutes";
 import { researchQueriesRoutes } from "./ResearchQueriesRoutes";
+import { reportsRoutes } from "./ReportsRoutes";
 import { restorationNewRoutes } from "./RestorationNewRoutes";
 import { restorationQueriesActionsRoutes } from "./RestorationQueriesActionsRoutes";
 import { restorationQueriesRoutes } from "./RestorationQueriesRoutes";
@@ -32,6 +33,7 @@ export const appRouter = createBrowserRouter([
       ...inventoryQueriesRoutes,
       ...inventoryQueriesActionsRoutes,
       ...researchQueriesActionsRoutes,
+      ...reportsRoutes,
       ...restorationQueriesRoutes,
       ...restorationEditSelectRoutes,
       ...restorationNewRoutes,

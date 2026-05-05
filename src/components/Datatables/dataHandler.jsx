@@ -61,7 +61,7 @@ function push_array_data(orderedData, column) {
     if (orderedData && orderedData.length > 0 && "title" in orderedData[0]) {
       data_c.push(orderedData[0]["title"]);
     }
-    data_c.push(column);
+    data_c.push("");
     return data_c;
 
   } else if (column === "period_info") {
