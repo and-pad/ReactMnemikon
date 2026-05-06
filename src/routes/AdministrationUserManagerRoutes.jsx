@@ -32,6 +32,24 @@ const UserEditForm = lazy(() =>
   })),
 );
 
+const RolesAdminPage = lazy(() =>
+  import("../components/UserManage/Roles/RolesAdmin").then((module) => ({
+    default: module.RolesAdminPage,
+  })),
+);
+
+const UsersRoleAccessListPage = lazy(() =>
+  import("../components/UserManage/Roles/RolesAdmin").then((module) => ({
+    default: module.UsersRoleAccessListPage,
+  })),
+);
+
+const UserRoleAccessEditPage = lazy(() =>
+  import("../components/UserManage/Roles/RolesAdmin").then((module) => ({
+    default: module.UserRoleAccessEditPage,
+  })),
+);
+
 export const administrationUserManagerRoutes = [
   {
     path: "administration/user_manage/user/",
@@ -58,5 +76,17 @@ export const administrationUserManagerRoutes = [
         element: <ProtectedRouteElement component={UserEditForm} />,
       },
     ],
+  },
+  {
+    path: "administration/user_manage/roles",
+    element: <ProtectedRouteElement component={RolesAdminPage} />,
+  },
+  {
+    path: "administration/user_manage/roles/users",
+    element: <ProtectedRouteElement component={UsersRoleAccessListPage} />,
+  },
+  {
+    path: "administration/user_manage/roles/users/:id",
+    element: <ProtectedRouteElement component={UserRoleAccessEditPage} />,
   },
 ];

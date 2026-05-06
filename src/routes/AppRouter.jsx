@@ -1,4 +1,5 @@
 import { createBrowserRouter } from "react-router-dom";
+import { administrationCatalogRoutes } from "./AdministrationCatalogRoutes";
 import { administrationUserManagerRoutes } from "./AdministrationUserManagerRoutes";
 import { authRoutes } from "./AuthRoutes";
 import { inventoryQueriesActionsRoutes } from "./InventoryQueriesActionsRoutes";
@@ -39,6 +40,7 @@ export const appRouter = createBrowserRouter([
       ...restorationNewRoutes,
       ...restorationQueriesActionsRoutes,
       ...movementsRoutes,
+      ...administrationCatalogRoutes,
       ...administrationUserManagerRoutes,
     ],
   },

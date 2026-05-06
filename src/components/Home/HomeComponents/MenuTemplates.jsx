@@ -160,6 +160,22 @@ export function TopNavBar({ user, permissions, handleLogout }) {
 
                                                         </li>
                                                     )}
+                                                    {permissions && permissions.includes('ver_roles') && (
+                                                        <li >
+                                                            <div
+                                                                href="#"
+                                                                className="dropdown-item "
+                                                            >
+                                                                <Link
+                                                                    to="/mnemosine/administration/user_manage/roles"
+                                                                    className="dropdown-item"
+                                                                >
+                                                                    {langData.StartMenu.roles}
+                                                                </Link>
+                                                            </div>
+
+                                                        </li>
+                                                    )}
                                                 </ul>
                                             </li>
                                         )}
@@ -198,8 +214,8 @@ export function TopNavBar({ user, permissions, handleLogout }) {
                                                         </Link>
                                                     </li>
                                                     <li className="dropdown-item">
-                                                        <Link to="/mnemosine/administration/catalog_genres" className="dropdown-item">
-                                                            <i className="nav-icon icon-layers"></i> {langData.StartMenu.genres}
+                                                        <Link to="/mnemosine/administration/catalog_genders" className="dropdown-item">
+                                                            <i className="nav-icon icon-layers"></i> {langData.StartMenu.genders}
                                                         </Link>
                                                     </li>
                                                 </ul>
