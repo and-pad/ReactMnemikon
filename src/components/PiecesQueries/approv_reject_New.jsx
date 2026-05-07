@@ -2,7 +2,11 @@ import moment from "../LocalTools/moment";
 import 'moment/locale/es-mx'; // Importa el paquete de locales dentro de moment
 
 import { useEffect, useState } from "react";
-import { API_RequestPendingList , API_SendNewApprovralDecision } from "./APICalls";
+import { useNavigate } from "react-router-dom";
+import {
+  API_RequestPendingList,
+  API_SendNewApprovralDecision,
+} from "./APICalls";
 import {
   Table,
   TableBody,
@@ -68,18 +72,23 @@ const NEW_PIECE_FIELDS = [
   { key: "diameter_with_base", label: "Diámetro con base" },
 ];
 export const ApprovRejectNew = ({ accessToken, refreshToken, permissions }) => {
-  const [Data, setData] = useState();
+  const navigate = useNavigate();
+  const [newPieces, setNewPieces] = useState([]);
+  const [modifiedPieces, setModifiedPieces] = useState([]);
 
-  useEffect(() => {
-    console.log("accessToken:", accessToken);
+  const loadPendingData = () => {
     API_RequestPendingList({ accessToken, refreshToken })
       .then((data) => {
-        console.log(data,"datarecien");
-        setData(data);
+        setNewPieces(data?.new_pieces || []);
+        setModifiedPieces(data?.modified_pieces || []);
       })
       .catch((error) => {
         console.error("Error inesperado", error);
       });
+  };
+
+  useEffect(() => {
+    loadPendingData();
   }, []);
   const NewPieceTable = ({ piece }) => (
     <Table size="small">
@@ -224,23 +233,43 @@ export const ApprovRejectNew = ({ accessToken, refreshToken, permissions }) => {
   };
 
   const handleApprove = async (itemId, approved) => {
+    const response = await API_SendNewApprovralDecision({
+      accessToken,
+      refreshToken,
+      itemId,
+      approved,
+    });
+    if (!response?.error) {
+      loadPendingData();
+    }
+  };
 
-    console.log("Aprobar:", itemId);
-    const response = await API_SendNewApprovralDecision({ accessToken, refreshToken, itemId, approved });
-    console.log("Respuesta de aprobación/rechazo:", response);
-    // TODO: llamar API approve
+  const openModificationInEdit = (pieceId) => {
+    navigate(`/mnemosine/inventory_queries/actions/${encodeURIComponent(pieceId)}/edit`);
   };
 
   return (
     <div>
       <div className="container bg-secondary border border-primary rounded p-3">
-        {Data &&
-          Data.map((item, index) => (
+        <Typography variant="h5" sx={{ color: "white", mb: 2, fontWeight: 700 }}>
+          Piezas nuevas pendientes
+        </Typography>
+
+        {newPieces.length === 0 ? (
+          <Typography sx={{ color: "white", mb: 3 }}>
+            No hay piezas nuevas pendientes.
+          </Typography>
+        ) : null}
+
+        {newPieces.map((item, index) => (
             <Accordion key={item._id} sx={{  backgroundColor: "#d8d8d8", mb: 2 }}>
               <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                 <Typography sx={{ fontWeight: 600 }}>
                   #{index + 1} — Inventario: {item.new_piece?.inventory_number} Fecha de requerimiento:{" "}
                    {moment(item.created_at).format("DD [de] MMMM [de] YYYY, HH:mm")}
+                   {item.created_by_info?.username
+                    ? ` · ${item.created_by_info.username}`
+                    : ""}
                 </Typography>
               </AccordionSummary>
 
@@ -282,6 +311,142 @@ export const ApprovRejectNew = ({ accessToken, refreshToken, permissions }) => {
               </AccordionDetails>
             </Accordion>
           ))}
+
+        <Typography variant="h5" sx={{ color: "white", mb: 2, mt: 4, fontWeight: 700 }}>
+          Modificaciones pendientes
+        </Typography>
+
+        {modifiedPieces.length === 0 ? (
+          <Typography sx={{ color: "white" }}>
+            No hay modificaciones pendientes.
+          </Typography>
+        ) : null}
+
+        {modifiedPieces.map((item, index) => (
+          <Accordion key={item._id} sx={{ backgroundColor: "#d8d8d8", mb: 2 }}>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+              <Typography sx={{ fontWeight: 600 }}>
+                #{index + 1} — Inventario: {item.piece_info?.inventory_number || "N/D"}
+                {" · "}Catálogo: {item.piece_info?.catalog_number || "N/D"}
+                {" · "}Fecha de modificación:{" "}
+                {item.created_at
+                  ? moment(item.created_at).format("DD [de] MMMM [de] YYYY, HH:mm")
+                  : "N/D"}
+                {item.created_by_info?.username
+                  ? ` · ${item.created_by_info.username}`
+                  : ""}
+              </Typography>
+            </AccordionSummary>
+
+            <AccordionDetails>
+              <Table size="small">
+                <TableBody>
+                  <TableRow hover>
+                    <TableCell
+                      sx={{
+                        fontWeight: 600,
+                        color: "text.secondary",
+                        width: "35%",
+                        borderBottom: "1px solid #979797",
+                      }}
+                    >
+                      No. Inventario
+                    </TableCell>
+                    <TableCell sx={{ borderBottom: "1px solid #979797" }}>
+                      {item.piece_info?.inventory_number || "N/D"}
+                    </TableCell>
+                  </TableRow>
+                  <TableRow hover>
+                    <TableCell
+                      sx={{
+                        fontWeight: 600,
+                        color: "text.secondary",
+                        width: "35%",
+                        borderBottom: "1px solid #979797",
+                      }}
+                    >
+                      No. Catálogo
+                    </TableCell>
+                    <TableCell sx={{ borderBottom: "1px solid #979797" }}>
+                      {item.piece_info?.catalog_number || "N/D"}
+                    </TableCell>
+                  </TableRow>
+                  <TableRow hover>
+                    <TableCell
+                      sx={{
+                        fontWeight: 600,
+                        color: "text.secondary",
+                        width: "35%",
+                        borderBottom: "1px solid #979797",
+                      }}
+                    >
+                      No. Origen
+                    </TableCell>
+                    <TableCell sx={{ borderBottom: "1px solid #979797" }}>
+                      {item.piece_info?.origin_number || "N/D"}
+                    </TableCell>
+                  </TableRow>
+                  <TableRow hover>
+                    <TableCell
+                      sx={{
+                        fontWeight: 600,
+                        color: "text.secondary",
+                        width: "35%",
+                        borderBottom: "1px solid #979797",
+                      }}
+                    >
+                      Modificado por
+                    </TableCell>
+                    <TableCell sx={{ borderBottom: "1px solid #979797" }}>
+                      {item.created_by_info?.username || "N/D"}
+                      {item.created_by_info?.email
+                        ? ` «${item.created_by_info.email}»`
+                        : ""}
+                    </TableCell>
+                  </TableRow>
+                  <TableRow hover>
+                    <TableCell
+                      sx={{
+                        fontWeight: 600,
+                        color: "text.secondary",
+                        width: "35%",
+                        borderBottom: "1px solid #979797",
+                      }}
+                    >
+                      Fecha de modificación
+                    </TableCell>
+                    <TableCell sx={{ borderBottom: "1px solid #979797" }}>
+                      {item.created_at
+                        ? moment(item.created_at).format("DD [de] MMMM [de] YYYY, HH:mm")
+                        : "N/D"}
+                    </TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+
+              <Box
+                sx={{
+                  display: "flex",
+                  gap: 2,
+                  mt: 4,
+                  pt: 2,
+                  justifyContent: "flex-end",
+                  borderTop: "1px solid",
+                  borderColor: "divider",
+                }}
+              >
+                <Button
+                  variant="contained"
+                  color="primary"
+                  startIcon={<CheckCircleIcon />}
+                  onClick={() => openModificationInEdit(item.piece_id)}
+                >
+                  Revisar en edición
+                </Button>
+              </Box>
+            </AccordionDetails>
+          </Accordion>
+        ))}
       </div>
     </div>
   );

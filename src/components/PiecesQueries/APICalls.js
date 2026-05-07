@@ -1,5 +1,9 @@
 import SETTINGS from "../Config/settings";
-import { fetchWithAuth } from "../LoginComponents/handleLogin";
+import {
+  fetchWithAuth,
+  getAccessToken,
+  getRefreshToken,
+} from "../LoginComponents/handleLogin";
 
 export const API_RequestPendingList = async ({
   accessToken,
@@ -266,6 +270,41 @@ export const fetchInventoryEdit = async (accessToken, refreshToken, _id) => {
   }
 
   return "error: impossible to comunicate to server";
+};
+
+export const API_RequestInventoryHistory = async ({
+  accessToken,
+  refreshToken,
+  pieceId,
+}) => {
+  const url =
+    SETTINGS.URL_ADDRESS.server_api_commands +
+    `authenticated/inventory_query/history/${pieceId}/`;
+
+  try {
+    const response = await fetchWithAuth(
+      url,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      },
+      {
+        accessToken: accessToken || getAccessToken(),
+        refreshToken: refreshToken || getRefreshToken(),
+      },
+    );
+
+    if (response.ok) {
+      return await response.json();
+    }
+
+    return await response.json();
+  } catch (e) {
+    console.error(e);
+    return false;
+  }
 };
 
 const API_inventory_fetch_new = async (accessToken, refreshToken) => {
