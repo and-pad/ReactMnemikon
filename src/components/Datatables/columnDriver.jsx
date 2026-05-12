@@ -1,21 +1,8 @@
 //import langData from '../Languages/en/Lang';
 import SETTINGS from "../Config/settings";
 import { useNavigate } from 'react-router-dom';
-import { useState } from "react";
-import moment from "moment";
-import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  Alert,
-  Box,
-  CircularProgress,
-  Typography,
-} from "@mui/material";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 import { getTranslations } from '../Languages/i18n';
-import { API_RequestInventoryHistory } from "../PiecesQueries/APICalls";
 const langData = getTranslations();
 
 
@@ -119,152 +106,9 @@ const editInventoryClick = ({_id, navigate}) => {
     navigate(`/mnemosine/inventory_queries/actions/${encodeURIComponent(_id[0])}/edit`)
 }
 
-const InventoryHistoryModal = ({ pieceId }) => {
-    const modalId = `inventoryHistoryModal-${pieceId}`;
-    const [loading, setLoading] = useState(false);
-    const [errorMsg, setErrorMsg] = useState("");
-    const [history, setHistory] = useState([]);
-    const [hasLoaded, setHasLoaded] = useState(false);
-
-    const loadHistory = async () => {
-        setLoading(true);
-        setErrorMsg("");
-        const response = await API_RequestInventoryHistory({ pieceId });
-        setLoading(false);
-        setHasLoaded(true);
-
-        if (!response || response?.error) {
-            setErrorMsg(response?.error || "No fue posible obtener el historial.");
-            setHistory([]);
-            return;
-        }
-
-        setHistory(response?.history || []);
-    };
-
-    const renderValue = (value) => {
-        if (value === null || value === undefined || value === "") {
-            return "N/D";
-        }
-        return String(value);
-    };
-
-    return (
-        <>
-            <button
-                className="btn btn-sm btn-info"
-                data-bs-toggle="modal"
-                data-bs-target={`#${modalId}`}
-                onClick={loadHistory}
-            >
-                <i className="fas fa-history"></i>
-            </button>
-
-            <div
-                className="modal fade"
-                id={modalId}
-                tabIndex="-1"
-                aria-labelledby={`${modalId}Label`}
-                aria-hidden="true"
-            >
-                <div className="modal-dialog modal-xl modal-dialog-scrollable">
-                    <div className="modal-content">
-                        <div className="modal-header bg-secondary bg-gradient text-white">
-                            <h5 className="modal-title" id={`${modalId}Label`}>
-                                Historial de inventario
-                            </h5>
-                            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div className="modal-body" style={{ backgroundColor: "rgb(232,236,240)" }}>
-                            {loading ? (
-                                <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
-                                    <CircularProgress />
-                                </Box>
-                            ) : null}
-
-                            {!loading && errorMsg ? (
-                                <Alert severity="error">{errorMsg}</Alert>
-                            ) : null}
-
-                            {!loading && !errorMsg && hasLoaded && history.length === 0 ? (
-                                <Alert severity="info">No existe historial para esta pieza</Alert>
-                            ) : null}
-
-                            {!loading && !errorMsg && history.length > 0 ? (
-                                <Box>
-                                    {history.map((entry, index) => (
-                                        <Accordion key={entry.id || `${pieceId}-${index}`} sx={{ backgroundColor: "#d8d8d8", mb: 2 }}>
-                                            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                                                <Box sx={{ width: "100%" }}>
-                                                    <Typography sx={{ fontWeight: 600 }}>
-                                                        #{history.length - index} - {entry.action_type} - {entry.status}
-                                                    </Typography>
-                                                    <Typography variant="body2" color="text.secondary">
-                                                        {entry.created_at
-                                                            ? moment(entry.created_at).format("DD [de] MMMM [de] YYYY, HH:mm")
-                                                            : "Fecha no disponible"}
-                                                        {" · "}
-                                                        {entry.created_by?.username || "Usuario no disponible"}
-                                                    </Typography>
-                                                </Box>
-                                            </AccordionSummary>
-                                            <AccordionDetails>
-                                                <Box sx={{ mb: 2 }}>
-                                                    <Typography variant="body2">
-                                                        <strong>Solicitado por:</strong>{" "}
-                                                        {entry.created_by?.username || "N/D"}
-                                                        {entry.created_by?.email ? ` «${entry.created_by.email}»` : ""}
-                                                    </Typography>
-                                                    <Typography variant="body2">
-                                                        <strong>Autorizado por:</strong>{" "}
-                                                        {entry.approved_rejected_by?.username || "N/D"}
-                                                        {entry.approved_rejected_by?.email ? ` «${entry.approved_rejected_by.email}»` : ""}
-                                                    </Typography>
-                                                </Box>
-
-                                                <div className="table-responsive">
-                                                    <table className="table table-sm table-bordered align-middle bg-white">
-                                                        <thead className="table-light">
-                                                            <tr>
-                                                                <th style={{ width: "25%" }}>Campo</th>
-                                                                <th style={{ width: "37.5%" }}>Valor anterior</th>
-                                                                <th style={{ width: "37.5%" }}>Valor nuevo</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            {entry.changes?.length ? (
-                                                                entry.changes.map((change, changeIndex) => (
-                                                                    <tr key={`${entry.id}-change-${changeIndex}`}>
-                                                                        <td><strong>{change.label}</strong></td>
-                                                                        <td style={{ whiteSpace: "pre-wrap" }}>{renderValue(change.old_value)}</td>
-                                                                        <td style={{ whiteSpace: "pre-wrap" }}>{renderValue(change.new_value)}</td>
-                                                                    </tr>
-                                                                ))
-                                                            ) : (
-                                                                <tr>
-                                                                    <td colSpan="3">No hay cambios detallados disponibles.</td>
-                                                                </tr>
-                                                            )}
-                                                        </tbody>
-                                                    </table>
-                                                </div>
-                                            </AccordionDetails>
-                                        </Accordion>
-                                    ))}
-                                </Box>
-                            ) : null}
-                        </div>
-                        <div className="modal-footer bg-secondary bg-gradient">
-                            <button type="button" className="btn btn-primary bg-gradient" data-bs-dismiss="modal">
-                                Cerrar
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </>
-    );
-};
+const inventoryHistoryClick = ({ _id, navigate }) => {
+    navigate(`/mnemosine/inventory_queries/actions/${encodeURIComponent(_id[0])}/history`)
+}
 
 
 const InventoryActions = ({ row, column }) => {
@@ -282,7 +126,9 @@ const InventoryActions = ({ row, column }) => {
                 <button className="btn btn-sm btn-danger">
                     <i className="fas fa-trash-alt"></i>
                 </button>
-                <InventoryHistoryModal pieceId={_id[0]} />
+                <button className="btn btn-sm btn-info" onClick={() => inventoryHistoryClick({ _id, navigate })}>
+                    <i className="fas fa-history"></i>
+                </button>
             </div>
         </>
     )

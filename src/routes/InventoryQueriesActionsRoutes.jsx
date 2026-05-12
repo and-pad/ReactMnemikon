@@ -7,6 +7,12 @@ const EditInventory = lazy(() =>
   })),
 );
 
+const InventoryHistory = lazy(() =>
+  import("../components/PiecesQueries/history").then((module) => ({
+    default: module.InventoryHistory,
+  })),
+);
+
 const NewInventory = lazy(() =>
   import("../components/PiecesQueries/new").then((module) => ({
     default: module.NewInventory,
@@ -49,5 +55,9 @@ export const inventoryQueriesActionsRoutes = [
         element: <ProtectedRouteElement component={NewInventory} />,
       },
     ],
+  },
+  {
+    path: "inventory_queries/actions/:_id/history",
+    element: <ProtectedRouteElement component={InventoryHistory} />,
   },
 ];

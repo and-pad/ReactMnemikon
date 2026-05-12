@@ -1,6 +1,9 @@
 # Node modules
 node_modules/
 
+# Config files
+src/components/Config/settings.js
+
 # Build output
 dist/
 build/
