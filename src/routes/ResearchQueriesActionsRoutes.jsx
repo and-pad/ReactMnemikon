@@ -1,6 +1,10 @@
 import { lazy } from "react";
 import { Navigate } from "react-router-dom";
 import { ProtectedRouteElement } from "./RouteElements";
+import {
+  RESEARCH_PERMISSIONS,
+  ResearchPermissionFallback,
+} from "../components/PiecesResearchs/researchPermissions";
 
 const ResearchEdit = lazy(() =>
   import("../components/PiecesResearchs/researchsActions").then((module) => ({
@@ -17,7 +21,20 @@ const EditResearch = lazy(() =>
 export const researchQueriesActionsRoutes = [
   {
     path: "piece_researchs/actions/:_id/",
-    element: <ProtectedRouteElement component={ResearchEdit} />,
+    element: (
+      <ProtectedRouteElement
+        component={ResearchEdit}
+        componentProps={{
+          requiredPermissions: [
+            RESEARCH_PERMISSIONS.create,
+            RESEARCH_PERMISSIONS.edit,
+          ],
+          fallbackElement: (
+            <ResearchPermissionFallback title="No tienes permiso para abrir el editor de investigación." />
+          ),
+        }}
+      />
+    ),
     children: [
       {
         index: true,
@@ -25,7 +42,20 @@ export const researchQueriesActionsRoutes = [
       },
       {
         path: "edit",
-        element: <ProtectedRouteElement component={EditResearch} />,
+        element: (
+          <ProtectedRouteElement
+            component={EditResearch}
+            componentProps={{
+              requiredPermissions: [
+                RESEARCH_PERMISSIONS.create,
+                RESEARCH_PERMISSIONS.edit,
+              ],
+              fallbackElement: (
+                <ResearchPermissionFallback title="No tienes permiso para editar o crear investigaciones." />
+              ),
+            }}
+          />
+        ),
       },
     ],
   },

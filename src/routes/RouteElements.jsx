@@ -27,18 +27,42 @@ export function ProtectedRouteElement({ component: Component, componentProps = {
     handleCheckLoginCallback,
   } = useRouteContext();
 
+  const requiredPermissions = componentProps.requiredPermissions || [];
+  const permissionMode = componentProps.permissionMode || "some";
+  const fallbackElement = componentProps.fallbackElement || null;
+
+  const hasRequiredPermissions =
+    requiredPermissions.length === 0
+      ? true
+      : permissionMode === "every"
+        ? requiredPermissions.every((permission) =>
+            permissions?.includes(permission),
+          )
+        : requiredPermissions.some((permission) =>
+            permissions?.includes(permission),
+          );
+
+  const resolvedComponentProps = { ...componentProps };
+  delete resolvedComponentProps.requiredPermissions;
+  delete resolvedComponentProps.permissionMode;
+  delete resolvedComponentProps.fallbackElement;
+
   return (
     <PrivateRoute
       checkLogin={handleCheckLoginCallback}
       element={
         <Suspense fallback={<RouteLoadingFallback />}>
-          <Component
-            {...componentProps}
-            accessToken={accessToken}
-            refreshToken={refreshToken}
-            permissions={permissions}
-            handleCheckLoginCallback={handleCheckLoginCallback}
-          />
+          {hasRequiredPermissions ? (
+            <Component
+              {...resolvedComponentProps}
+              accessToken={accessToken}
+              refreshToken={refreshToken}
+              permissions={permissions}
+              handleCheckLoginCallback={handleCheckLoginCallback}
+            />
+          ) : (
+            fallbackElement
+          )}
         </Suspense>
       }
     />

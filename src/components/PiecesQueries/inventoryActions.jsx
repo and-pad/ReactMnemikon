@@ -2,15 +2,12 @@ import { useParams, Outlet } from "react-router-dom";
 import { createContext, useContext, useState, useEffect } from "react";
 
 import { fetchInventoryEdit, fetchNewInventory } from "./APICalls";
+import {
+  canCreateInventory,
+  canEditInventory,
+  InventoryPermissionFallback,
+} from "./inventoryPermissions";
 const DataContext = createContext();
-
-const HasntPermission = () => {
-  return (
-    <div>
-      <h1> No tienes permiso para editar</h1>
-    </div>
-  );
-};
 
 export const InventoryAction = ({
   accessToken,
@@ -21,25 +18,17 @@ export const InventoryAction = ({
   const { _id } = useParams();
   //const navigate = useNavigate();
   const [Data, setData] = useState();
-  const [Documents, setDocuments] = useState();
   const [hasPermission, setHasPermission] = useState(true);
- // const [Action, setAction] = useState(action);
+
   useEffect(() => {
     if (action === "edit") {
-
-      if (permissions.includes("editar_inventario")) {
+      if (canEditInventory(permissions)) {
         fetchInventoryEdit(accessToken, refreshToken, _id)
           .then((data) => {
-            console.log(data,"datarecien")
             setData({
                 ...data,
                 action:action,
                 });
-            console.log({...data,
-                action:action,
-            },"datadespues")
-           // setAction(action);
-            setDocuments(data["documents"]);
             setHasPermission(true);
           })
           .catch((error) => {
@@ -50,18 +39,13 @@ export const InventoryAction = ({
       }
 
     } else if (action === "new") {
-
-        if (permissions.includes("agregar_inventario")) {
+        if (canCreateInventory(permissions)) {
           fetchNewInventory(accessToken, refreshToken, _id)
             .then((data) => {
-              //console.log(data,"datarecien")
-              
-         setData({
+              setData({
                 ...data,
                 action,
-                });
-              //setAction(action);
-              //setDocuments(data["documents"]);
+              });
               setHasPermission(true);
             })
             .catch((error) => {
@@ -71,13 +55,19 @@ export const InventoryAction = ({
           setHasPermission(false);
         }
     }
-  }, [_id, accessToken, refreshToken]);
+  }, [_id, accessToken, refreshToken, action, permissions]);
 
   return (
     <DataContext.Provider value={Data}>
       <br />
      
-      {hasPermission ? <Outlet /> : <HasntPermission />}
+      {hasPermission ? (
+        <Outlet />
+      ) : action === "new" ? (
+        <InventoryPermissionFallback title="No tienes permiso para agregar piezas de inventario." />
+      ) : (
+        <InventoryPermissionFallback title="No tienes permiso para editar piezas de inventario." />
+      )}
     </DataContext.Provider>
   );
 };

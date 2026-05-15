@@ -9,10 +9,20 @@ import { Modal } from "bootstrap/dist/js/bootstrap.bundle.min";
 import { Button } from "@mui/material";
 import ModifiedOutlet from "./isModifiedOutlet";
 import { InventoryFields } from "./Fields/_inventory_fields";
+import {
+  canCreateInventory,
+  InventoryPermissionFallback,
+} from "./inventoryPermissions";
 
 const langData = getTranslations();
 
 export const NewInventory = ({ accessToken, refreshToken, permissions }) => {
+  if (!canCreateInventory(permissions)) {
+    return (
+      <InventoryPermissionFallback title="No tienes permiso para agregar piezas de inventario." />
+    );
+  }
+
   const data = useData();
   const [Data, setData] = useState();
   const [formData, setFormData] = useState();
@@ -333,6 +343,7 @@ export const NewInventory = ({ accessToken, refreshToken, permissions }) => {
                 handleLocationChange={handleLocationChange}
                 handleLocationFilter={handleLocationFilter}
                 filteredLocations={filteredLocations}
+                showAppraisal={true}
               />
             </div>
 

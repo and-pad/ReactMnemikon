@@ -2,9 +2,13 @@ import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { fetchRestorationEditSelect } from "./APICalls";
 import { SelectDatatable } from "./edit-selectDatatable";
+import {
+  canAccessRestorationRecords,
+  RestorationPermissionFallback,
+} from "./restorationPermissions";
 //const DataContext = createContext();
 
-export const RestorationEditSelect = ({ accessToken, refreshToken }) => {
+export const RestorationEditSelect = ({ accessToken, refreshToken, permissions }) => {
   const { _id } = useParams();
  // const navigate = useNavigate();
   const [Data, setData] = useState();
@@ -12,6 +16,10 @@ export const RestorationEditSelect = ({ accessToken, refreshToken }) => {
   // const [Documents, setDocuments] = useState();
 
   useEffect(() => {
+    if (!canAccessRestorationRecords(permissions)) {
+      return;
+    }
+
     fetchRestorationEditSelect(accessToken, refreshToken, _id)
       .then((data) => {
         //console.log(data,"datarecien")
@@ -20,7 +28,13 @@ export const RestorationEditSelect = ({ accessToken, refreshToken }) => {
       .catch((error) => {
         console.error("Error inesperado", error);
       });
-  }, [_id, accessToken, refreshToken ]);
+  }, [_id, accessToken, refreshToken, permissions]);
+
+  if (!canAccessRestorationRecords(permissions)) {
+    return (
+      <RestorationPermissionFallback title="No tienes permiso para acceder al historial de restauraciones." />
+    );
+  }
 
   /*const handleEdit = ({ navigate, restoration }) => {
     console.log("restoration", restoration["_id"]);
@@ -36,6 +50,7 @@ export const RestorationEditSelect = ({ accessToken, refreshToken }) => {
     <SelectDatatable 
     restorations={Data ? Data["restorations"] : []}
     _id={_id}
+    permissions={permissions}
      
      
      />

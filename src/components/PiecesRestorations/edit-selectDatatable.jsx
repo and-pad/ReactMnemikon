@@ -9,8 +9,9 @@ import { columnsSelector, structureData } from "./utils_edit";
 import "../Datatables/datatable.css";
 import customStyles from "../Datatables/datatableCustomCellStyle";
 //import { lang } from "moment";
+import { canCreateRestoration } from "./restorationPermissions";
 
-export const SelectDatatable = ({ restorations , _id}) => {
+export const SelectDatatable = ({ restorations , _id, permissions = []}) => {
   const [theme, setTheme] = useState("custom-dark");
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -44,9 +45,11 @@ export const SelectDatatable = ({ restorations , _id}) => {
             mb: 2, // margin-bottom
           }}
         >
-          <Button variant="contained" color="secondary" onClick={() => handleNew({_id})}>
-            + Agregar
-          </Button>
+          {canCreateRestoration(permissions) ? (
+            <Button variant="contained" color="secondary" onClick={() => handleNew({_id})}>
+              + Agregar
+            </Button>
+          ) : null}
         </Box>
         <Datatable
           columns={columnsSelector}

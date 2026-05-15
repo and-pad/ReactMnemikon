@@ -1,5 +1,9 @@
 import { lazy } from "react";
 import { ProtectedRouteElement } from "./RouteElements";
+import {
+  RESEARCH_PERMISSIONS,
+  ResearchPermissionFallback,
+} from "../components/PiecesResearchs/researchPermissions";
 
 const ResearchsQueries = lazy(() =>
   import("../components/PiecesResearchs/ResearchsQueries").then((module) => ({
@@ -13,7 +17,14 @@ export const researchQueriesRoutes = [
     element: (
       <ProtectedRouteElement
         component={ResearchsQueries}
-        componentProps={{ module: "Research", title: "Investigación" }}
+        componentProps={{
+          module: "Research",
+          title: "Investigación",
+          requiredPermissions: [RESEARCH_PERMISSIONS.view],
+          fallbackElement: (
+            <ResearchPermissionFallback title="No tienes permiso para ver Investigación." />
+          ),
+        }}
       />
     ),
   },

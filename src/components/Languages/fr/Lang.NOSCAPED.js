@@ -27,6 +27,7 @@ const langData = {
     administration: "Administration",
     connected_user: "Utilisateur connecté :",
     language: "Langue",
+    roles: "Rôles",
   },
   dataTablesSearch: {
     place_holder: "Trouve quelque chose...",

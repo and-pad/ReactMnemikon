@@ -3,9 +3,12 @@ import { useEffect, useState } from "react";
 
 import { fectchRestorationEdit, fetchRestorationUpdate } from "./APICalls";
 import { RestorationEdit } from "./_restoration_edit";
+import {
+  canEditRestoration,
+  RestorationPermissionFallback,
+} from "./restorationPermissions";
 
 export const EditRestoration = ({ accessToken, refreshToken, permissions }) => {
-
   const [Data, setData] = useState();
   
   const [formDataRestoration, setFormDataRestoration] = useState({});
@@ -300,6 +303,12 @@ const compareformData = (original, modified) => {
 
     }
   };
+
+  if (!canEditRestoration(permissions)) {
+    return (
+      <RestorationPermissionFallback title="No tienes permiso para editar restauraciones." />
+    );
+  }
 
   return (
     <div>

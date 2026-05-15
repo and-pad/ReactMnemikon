@@ -17,12 +17,20 @@ import { NewImageFields } from "./fields/_new_image_fields";
 import { DocumentsFields } from "./fields/_documents_fields";
 import { NewDocumentsFields } from "./fields/_new_documents_fields";
 import { ModalSaveResearch } from "./fields/_modal_save_research";
+import {
+  canCreateResearch,
+  canEditResearch,
+  ResearchPermissionFallback,
+} from "./researchPermissions";
 
 const langData = getTranslations();
 
 export const EditResearch = ({ accessToken, refreshToken, permissions }) => {
   const { _id } = useParams();
   const big_data = useDataResearch();
+  const data = big_data && big_data["research_data"];
+  const isExistingResearch = Boolean(data?._id);
+
   //const navigate = useNavigate();
   const [formDataResearch, setFormDataResearch] = useState(null);
   const [actualFormData, setCpFormData] = useState();
@@ -48,8 +56,6 @@ export const EditResearch = ({ accessToken, refreshToken, permissions }) => {
   const [serverMsg, setServerMsg] = useState("");
   const pendingSaveRef = useRef(null);
 
-
-  const data = big_data && big_data["research_data"];
   const InventoryData =
     data && data["inventory_data"] && data["inventory_data"][0];
 
@@ -524,6 +530,25 @@ export const EditResearch = ({ accessToken, refreshToken, permissions }) => {
     return changes;
   };
   
+
+  if (!big_data) {
+    return null;
+  }
+
+  if (isExistingResearch && !canEditResearch(permissions)) {
+    return (
+      <ResearchPermissionFallback title="No tienes permiso para editar investigaciones." />
+    );
+  }
+
+  if (
+    !isExistingResearch &&
+    !(canCreateResearch(permissions) || canEditResearch(permissions))
+  ) {
+    return (
+      <ResearchPermissionFallback title="No tienes permiso para crear investigaciones." />
+    );
+  }
 
   return (
     <div>

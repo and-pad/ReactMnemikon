@@ -1,5 +1,9 @@
 import { lazy } from "react";
 import { ProtectedRouteElement } from "./RouteElements";
+import {
+  INVENTORY_PERMISSIONS,
+  InventoryPermissionFallback,
+} from "../components/PiecesQueries/inventoryPermissions";
 
 const EditInventory = lazy(() =>
   import("../components/PiecesQueries/edit").then((module) => ({
@@ -31,7 +35,13 @@ export const inventoryQueriesActionsRoutes = [
     element: (
       <ProtectedRouteElement
         component={InventoryAction}
-        componentProps={{ action: "edit" }}
+        componentProps={{
+          action: "edit",
+          requiredPermissions: [INVENTORY_PERMISSIONS.edit],
+          fallbackElement: (
+            <InventoryPermissionFallback title="No tienes permiso para editar piezas de inventario." />
+          ),
+        }}
       />
     ),
     children: [
@@ -46,7 +56,13 @@ export const inventoryQueriesActionsRoutes = [
     element: (
       <ProtectedRouteElement
         component={InventoryAction}
-        componentProps={{ action: "new" }}
+        componentProps={{
+          action: "new",
+          requiredPermissions: [INVENTORY_PERMISSIONS.create],
+          fallbackElement: (
+            <InventoryPermissionFallback title="No tienes permiso para agregar piezas de inventario." />
+          ),
+        }}
       />
     ),
     children: [
@@ -58,6 +74,16 @@ export const inventoryQueriesActionsRoutes = [
   },
   {
     path: "inventory_queries/actions/:_id/history",
-    element: <ProtectedRouteElement component={InventoryHistory} />,
+    element: (
+      <ProtectedRouteElement
+        component={InventoryHistory}
+        componentProps={{
+          requiredPermissions: [INVENTORY_PERMISSIONS.view],
+          fallbackElement: (
+            <InventoryPermissionFallback title="No tienes permiso para ver el historial de inventario." />
+          ),
+        }}
+      />
+    ),
   },
 ];

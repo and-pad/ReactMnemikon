@@ -20,10 +20,22 @@ import { Button } from "@mui/material";
 //import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ModifiedOutlet from "./isModifiedOutlet";
 import { InventoryFields } from "./Fields/_inventory_fields";
+import {
+  canAuthorizeInventory,
+  canDeleteInventory,
+  canEditInventory,
+  InventoryPermissionFallback,
+} from "./inventoryPermissions";
 
 const langData = getTranslations();
 
 export const EditInventory = ({ accessToken, refreshToken, permissions }) => {
+  if (!canEditInventory(permissions)) {
+    return (
+      <InventoryPermissionFallback title="No tienes permiso para editar piezas de inventario." />
+    );
+  }
+
   const navigate = useNavigate();
 
   //definiciones para manejar los cambios
@@ -329,12 +341,19 @@ export const EditInventory = ({ accessToken, refreshToken, permissions }) => {
   return (
     <>
       {isModified ? (
-        <ModifiedOutlet
-          Data={Data}
-          accessToken={accessToken}
-          refreshToken={refreshToken}
-          setIsModified={setIsModified}
-        />
+        canAuthorizeInventory(permissions) ? (
+          <ModifiedOutlet
+            Data={Data}
+            accessToken={accessToken}
+            refreshToken={refreshToken}
+            setIsModified={setIsModified}
+          />
+        ) : (
+          <InventoryPermissionFallback
+            title="La pieza tiene una modificación pendiente de autorización."
+            description="Solicita a un usuario con permiso de autorización que revise el cambio para quitar este bloqueo."
+          />
+        )
       ) : (
         <div className="container">
           <form onSubmit={handleSave}>
@@ -358,6 +377,7 @@ export const EditInventory = ({ accessToken, refreshToken, permissions }) => {
                 changedDocs={changedDocs}
                 setchangedDocs={setchangedDocs}
                 sendSave={sendSave}
+                showAppraisal={canDeleteInventory(permissions)}
               />
             </div>
 
@@ -375,4 +395,3 @@ export const EditInventory = ({ accessToken, refreshToken, permissions }) => {
     </>
   );
 };
-

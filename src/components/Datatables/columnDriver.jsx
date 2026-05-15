@@ -1,6 +1,19 @@
 //import langData from '../Languages/en/Lang';
 import SETTINGS from "../Config/settings";
 import { useNavigate } from 'react-router-dom';
+import { useRouteContext } from "../../routes/RouteContext";
+import {
+    canDeleteInventory,
+    canEditInventory,
+    canViewInventory,
+} from "../PiecesQueries/inventoryPermissions";
+import {
+    canDeleteResearch,
+    canOpenResearchEditor,
+} from "../PiecesResearchs/researchPermissions";
+import {
+    canAccessRestorationRecords,
+} from "../PiecesRestorations/restorationPermissions";
 
 import { getTranslations } from '../Languages/i18n';
 const langData = getTranslations();
@@ -115,20 +128,31 @@ const InventoryActions = ({ row, column }) => {
    
     const _id = row._id;
     const navigate = useNavigate();
+    const routeContext = useRouteContext();
+    const permissions = routeContext?.permissions || [];
+    const canEdit = canEditInventory(permissions);
+    const canDelete = canDeleteInventory(permissions);
+    const canViewHistory = canViewInventory(permissions);
     
     return (
         <>
             <div className="d-flex justify-content-around">
-                <button className="btn btn-sm btn-primary" onClick={() => editInventoryClick({ _id, navigate })}>
-                    <i className="fas fa-edit"></i>
-                </button>
+                {canEdit ? (
+                    <button className="btn btn-sm btn-primary" onClick={() => editInventoryClick({ _id, navigate })}>
+                        <i className="fas fa-edit"></i>
+                    </button>
+                ) : null}
                 
-                <button className="btn btn-sm btn-danger">
-                    <i className="fas fa-trash-alt"></i>
-                </button>
-                <button className="btn btn-sm btn-info" onClick={() => inventoryHistoryClick({ _id, navigate })}>
-                    <i className="fas fa-history"></i>
-                </button>
+                {canDelete ? (
+                    <button className="btn btn-sm btn-danger">
+                        <i className="fas fa-trash-alt"></i>
+                    </button>
+                ) : null}
+                {canViewHistory ? (
+                    <button className="btn btn-sm btn-info" onClick={() => inventoryHistoryClick({ _id, navigate })}>
+                        <i className="fas fa-history"></i>
+                    </button>
+                ) : null}
             </div>
         </>
     )
@@ -145,18 +169,23 @@ const editRestorationClick = ({_id, navigate}) => {
 const ResearchActions = ({ row, column }) => {
     const _id = row._id;
     const navigate = useNavigate();
+    const routeContext = useRouteContext();
+    const permissions = routeContext?.permissions || [];
+    const canEdit = canOpenResearchEditor(permissions);
+    const canDelete = canDeleteResearch(permissions);
     return (
         <>
             <div className="d-flex ">
-                <button className="btn btn-sm btn-primary me-1" onClick={() => { editResearchClick({ _id, navigate })}}>
-                    <i className="fas fa-edit"></i>
-                </button>
-                <button className="btn btn-sm btn-danger me-1">
-                    <i className="fas fa-trash-alt"></i>
-                </button>
-                <button className="btn btn-sm btn-info me-2">
-                    <i className="fas fa-history"></i>
-                </button>
+                {canEdit ? (
+                    <button className="btn btn-sm btn-primary me-1" onClick={() => { editResearchClick({ _id, navigate })}}>
+                        <i className="fas fa-edit"></i>
+                    </button>
+                ) : null}
+                {canDelete ? (
+                    <button className="btn btn-sm btn-danger me-1">
+                        <i className="fas fa-trash-alt"></i>
+                    </button>
+                ) : null}
             </div>
         </>
     )
@@ -165,18 +194,17 @@ const ResearchActions = ({ row, column }) => {
 const RestorationActions = ({ row, column }) => {
     const _id = row._id;
     const navigate = useNavigate();
+    const routeContext = useRouteContext();
+    const permissions = routeContext?.permissions || [];
+    const canOpen = canAccessRestorationRecords(permissions);
     return (
         <>
             <div className="d-flex ">
-                <button className="btn btn-sm btn-primary me-1" onClick={() => { editRestorationClick({ _id, navigate })}}>
-                    <i className="fas fa-edit"></i>
-                </button>
-                <button className="btn btn-sm btn-danger me-1">
-                    <i className="fas fa-trash-alt"></i>
-                </button>
-                <button className="btn btn-sm btn-info me-2">
-                    <i className="fas fa-history"></i>
-                </button>
+                {canOpen ? (
+                    <button className="btn btn-sm btn-primary me-1" onClick={() => { editRestorationClick({ _id, navigate })}}>
+                        <i className="fas fa-edit"></i>
+                    </button>
+                ) : null}
             </div>
         </>
     )

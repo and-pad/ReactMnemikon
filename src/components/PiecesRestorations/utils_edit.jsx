@@ -3,6 +3,11 @@ import SETTINGS from "../Config/settings";
 import { getActualLang, getTranslations } from "../Languages/i18n";
 import moment from "../LocalTools/moment";
 import { useNavigate } from "react-router-dom";
+import { useRouteContext } from "../../routes/RouteContext";
+import {
+  canDeleteRestoration,
+  canEditRestoration,
+} from "./restorationPermissions";
 /*import "moment/locale/fr";  
 import "moment/locale/es";
 import "moment/locale/en-gb";*/
@@ -48,18 +53,23 @@ const CustomCell = ({row, column}) => {
 export const SelectActions = ({ row }) => {
   const navigate = useNavigate();
   const _ids = row["_ids"];
+  const routeContext = useRouteContext();
+  const permissions = routeContext?.permissions || [];
+  const canEdit = canEditRestoration(permissions);
+  const canDelete = canDeleteRestoration(permissions);
   return (
         <>
             <div className="d-flex justify-content-around">
-                <button className="btn btn-sm btn-primary" onClick={() => editRestorationClick({ _ids, navigate })}>
-                    <i className="fas fa-edit"></i>
-                </button>
-                <button className="btn btn-sm btn-danger">
-                    <i className="fas fa-trash-alt"></i>
-                </button>
-                <button className="btn btn-sm btn-info">
-                    <i className="fas fa-history"></i>
-                </button>
+                {canEdit ? (
+                  <button className="btn btn-sm btn-primary" onClick={() => editRestorationClick({ _ids, navigate })}>
+                      <i className="fas fa-edit"></i>
+                  </button>
+                ) : null}
+                {canDelete ? (
+                  <button className="btn btn-sm btn-danger">
+                      <i className="fas fa-trash-alt"></i>
+                  </button>
+                ) : null}
             </div>
         </>
     )
@@ -122,4 +132,3 @@ export const structureData = (restoration) => {
     actions: null,
   };
 };
-

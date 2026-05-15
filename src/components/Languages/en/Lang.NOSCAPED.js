@@ -29,7 +29,7 @@ const langData = {
     genders: "Genders",
     administration: "Administration",
     connected_user: "Connected user:",
-
+    roles: "Roles",
     language: "Language",
   },
   dataTablesSearch: {

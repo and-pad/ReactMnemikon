@@ -45,6 +45,7 @@ export const InventoryFields = ({
   handleLocationChange,
   handleLocationFilter,
   filteredLocations,
+  showAppraisal = true,
 }) => {
   const [Genders, setGenders] = useState([]);
   const [Subgenders, setSubgenders] = useState([]);
@@ -533,13 +534,15 @@ export const InventoryFields = ({
             />
           </div>
 
-          <div className="col">
-            <AppraisalField
-              formData={formData}
-              handleInputChange={handleInputChange}
-              langData={langData}
-            />
-          </div>
+          {showAppraisal ? (
+            <div className="col">
+              <AppraisalField
+                formData={formData}
+                handleInputChange={handleInputChange}
+                langData={langData}
+              />
+            </div>
+          ) : null}
         </div>
         <div className="row mb-3">
           <div className="col">

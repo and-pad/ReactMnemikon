@@ -88,7 +88,7 @@ export function TopNavBar({ user, permissions, handleLogout }) {
                                     <ul className="dropdown-menu bg-info" aria-labelledby="navbarDropdownMenuLink">
                                         <li><Link to='/mnemosine/movements/manage' className="dropdown-item" >{langData.StartMenu.manage}</Link></li>
                                         <li><Link to='/mnemosine/movements/loans' className="dropdown-item" >{langData.StartMenu.loans}</Link></li>
-                                        <li><Link to='/mnemosine/movements/search' className="dropdown-item" >{langData.StartMenu.search}</Link></li>
+                                        {/*<li><Link to='/mnemosine/movements/search' className="dropdown-item" >{langData.StartMenu.search}</Link></li>*/}
                                         <li><Link to='/mnemosine/movements/institutions' className="dropdown-item" >{langData.StartMenu.institutions}</Link></li>
                                         <li><Link to='/mnemosine/movements/contacts' className="dropdown-item" >{langData.StartMenu.contacts}</Link></li>
                                         <li><Link to='/mnemosine/movements/exhibitions' className="dropdown-item" >{langData.StartMenu.expositions}</Link></li>

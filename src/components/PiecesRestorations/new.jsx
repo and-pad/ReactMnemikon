@@ -4,6 +4,10 @@ import { useEffect, useState } from "react";
 import { fetchRestorationNew, fetchRestorationInsert } from "./APICalls";
 //import { RestorationEdit } from "./_restoration_edit";
 import { RestorationNew } from "./_restoration_new";
+import {
+  canCreateRestoration,
+  RestorationPermissionFallback,
+} from "./restorationPermissions";
 
 export const NewRestoration = ({ accessToken, refreshToken, permissions }) => {
   const [Data, setData] = useState();
@@ -211,6 +215,12 @@ export const NewRestoration = ({ accessToken, refreshToken, permissions }) => {
 
     }
   };
+
+  if (!canCreateRestoration(permissions)) {
+    return (
+      <RestorationPermissionFallback title="No tienes permiso para agregar restauraciones." />
+    );
+  }
 
   return (
     <div>

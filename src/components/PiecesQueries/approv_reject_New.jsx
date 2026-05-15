@@ -43,6 +43,10 @@ import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
 
 import SETTINGS from "../Config/settings";
+import {
+  canAuthorizeInventory,
+  InventoryPermissionFallback,
+} from "./inventoryPermissions";
 const IMAGE_BASE_URL =
   SETTINGS.URL_ADDRESS.server_url +
   SETTINGS.URL_ADDRESS.temporary_upload_documents;
@@ -72,6 +76,12 @@ const NEW_PIECE_FIELDS = [
   { key: "diameter_with_base", label: "Diámetro con base" },
 ];
 export const ApprovRejectNew = ({ accessToken, refreshToken, permissions }) => {
+  if (!canAuthorizeInventory(permissions)) {
+    return (
+      <InventoryPermissionFallback title="No tienes permiso para autorizar piezas o cambios de inventario." />
+    );
+  }
+
   const navigate = useNavigate();
   const [newPieces, setNewPieces] = useState([]);
   const [modifiedPieces, setModifiedPieces] = useState([]);

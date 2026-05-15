@@ -32,6 +32,10 @@ import {
   loadDatatableSnapshot,
 } from "./datatableDataCache";
 import { createTheme } from "react-data-table-component";
+import {
+  canAuthorizeInventory,
+  canCreateInventory,
+} from "../PiecesQueries/inventoryPermissions";
 
 
 const langData = getTranslations();
@@ -794,22 +798,26 @@ export const BaseDatatable = ({
 
         {module === "Inventory" && (
           <>
-            <Button
-              sx={{ textTransform: "none" }}
-              variant="contained"
-              color="secondary"
-              onClick={() => handlePending()}
-            >
-              Piezas pendientes
-            </Button>
-            <Button
-              sx={{ textTransform: "none" }}
-              variant="contained"
-              color="secondary"
-              onClick={() => handleNewInventory()}
-            >
-              + Agregar
-            </Button>
+            {canAuthorizeInventory(permissions) ? (
+              <Button
+                sx={{ textTransform: "none" }}
+                variant="contained"
+                color="secondary"
+                onClick={() => handlePending()}
+              >
+                Piezas pendientes
+              </Button>
+            ) : null}
+            {canCreateInventory(permissions) ? (
+              <Button
+                sx={{ textTransform: "none" }}
+                variant="contained"
+                color="secondary"
+                onClick={() => handleNewInventory()}
+              >
+                + Agregar
+              </Button>
+            ) : null}
           </>
         )}
 
