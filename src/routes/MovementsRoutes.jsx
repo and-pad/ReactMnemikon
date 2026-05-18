@@ -1,5 +1,9 @@
 import { lazy } from "react";
 import { ProtectedRouteElement } from "./RouteElements";
+import {
+  MOVEMENT_PERMISSIONS,
+  MovementPermissionFallback,
+} from "../components/Movements/movementPermissions";
 
 const MovementsManage = lazy(() =>
   import("../components/Movements/MovementsManage").then((module) => ({
@@ -112,74 +116,294 @@ const EditExhibition = lazy(() =>
 export const movementsRoutes = [
   {
     path: "movements/manage",
-    element: <ProtectedRouteElement component={MovementsManage} />,
+    element: (
+      <ProtectedRouteElement
+        component={MovementsManage}
+        componentProps={{
+          requiredPermissions: [
+            MOVEMENT_PERMISSIONS.view,
+            MOVEMENT_PERMISSIONS.edit,
+            MOVEMENT_PERMISSIONS.delete,
+            MOVEMENT_PERMISSIONS.authorize,
+          ],
+          permissionMode: "some",
+          fallbackElement: (
+            <MovementPermissionFallback message="No tienes permisos para acceder al listado de movimientos." />
+          ),
+        }}
+      />
+    ),
   },
   {
     path: "movements/new",
-    element: <ProtectedRouteElement component={NewMovement} />,
+    element: (
+      <ProtectedRouteElement
+        component={NewMovement}
+        componentProps={{
+          requiredPermissions: [MOVEMENT_PERMISSIONS.create],
+          fallbackElement: (
+            <MovementPermissionFallback message="No tienes permisos para crear movimientos." />
+          ),
+        }}
+      />
+    ),
   },
   {
     path: "movements/manage/edit/:id",
-    element: <ProtectedRouteElement component={EditMovement} />,
+    element: (
+      <ProtectedRouteElement
+        component={EditMovement}
+        componentProps={{
+          requiredPermissions: [MOVEMENT_PERMISSIONS.edit],
+          fallbackElement: (
+            <MovementPermissionFallback message="No tienes permisos para editar movimientos." />
+          ),
+        }}
+      />
+    ),
   },
   {
     path: "movements/manage/select-pieces/:id",
-    element: <ProtectedRouteElement component={SelectMovementPieces} />,
+    element: (
+      <ProtectedRouteElement
+        component={SelectMovementPieces}
+        componentProps={{
+          requiredPermissions: [
+            MOVEMENT_PERMISSIONS.create,
+            MOVEMENT_PERMISSIONS.edit,
+          ],
+          permissionMode: "some",
+          fallbackElement: (
+            <MovementPermissionFallback message="No tienes permisos para gestionar las piezas del movimiento." />
+          ),
+        }}
+      />
+    ),
   },
   {
     path: "movements/manage/info/:id",
-    element: <ProtectedRouteElement component={InfoMovement} />,
+    element: (
+      <ProtectedRouteElement
+        component={InfoMovement}
+        componentProps={{
+          requiredPermissions: [
+            MOVEMENT_PERMISSIONS.view,
+            MOVEMENT_PERMISSIONS.edit,
+            MOVEMENT_PERMISSIONS.delete,
+            MOVEMENT_PERMISSIONS.authorize,
+          ],
+          permissionMode: "some",
+          fallbackElement: (
+            <MovementPermissionFallback message="No tienes permisos para consultar la información del movimiento." />
+          ),
+        }}
+      />
+    ),
   },
   {
     path: "movements/manage/return-pieces/:id",
-    element: <ProtectedRouteElement component={ReturnMovementPieces} />,
+    element: (
+      <ProtectedRouteElement
+        component={ReturnMovementPieces}
+        componentProps={{
+          requiredPermissions: [MOVEMENT_PERMISSIONS.edit],
+          fallbackElement: (
+            <MovementPermissionFallback message="No tienes permisos para registrar el regreso de piezas." />
+          ),
+        }}
+      />
+    ),
   },
   {
     path: "movements/institutions",
-    element: <ProtectedRouteElement component={InstitutionsList} />,
+    element: (
+      <ProtectedRouteElement
+        component={InstitutionsList}
+        componentProps={{
+          requiredPermissions: [
+            MOVEMENT_PERMISSIONS.view,
+            MOVEMENT_PERMISSIONS.create,
+            MOVEMENT_PERMISSIONS.edit,
+            MOVEMENT_PERMISSIONS.delete,
+          ],
+          permissionMode: "some",
+          fallbackElement: (
+            <MovementPermissionFallback message="No tienes permisos para consultar instituciones de movimientos." />
+          ),
+        }}
+      />
+    ),
   },
   {
     path: "movements/institutions/new",
-    element: <ProtectedRouteElement component={NewInstitution} />,
+    element: (
+      <ProtectedRouteElement
+        component={NewInstitution}
+        componentProps={{
+          requiredPermissions: [MOVEMENT_PERMISSIONS.create],
+          fallbackElement: (
+            <MovementPermissionFallback message="No tienes permisos para crear instituciones." />
+          ),
+        }}
+      />
+    ),
   },
   {
     path: "movements/institutions/edit/:id",
-    element: <ProtectedRouteElement component={EditInstitution} />,
+    element: (
+      <ProtectedRouteElement
+        component={EditInstitution}
+        componentProps={{
+          requiredPermissions: [MOVEMENT_PERMISSIONS.edit],
+          fallbackElement: (
+            <MovementPermissionFallback message="No tienes permisos para editar instituciones." />
+          ),
+        }}
+      />
+    ),
   },
   {
     path: "movements/contacts",
-    element: <ProtectedRouteElement component={ContactsList} />,
+    element: (
+      <ProtectedRouteElement
+        component={ContactsList}
+        componentProps={{
+          requiredPermissions: [
+            MOVEMENT_PERMISSIONS.view,
+            MOVEMENT_PERMISSIONS.create,
+            MOVEMENT_PERMISSIONS.edit,
+            MOVEMENT_PERMISSIONS.delete,
+          ],
+          permissionMode: "some",
+          fallbackElement: (
+            <MovementPermissionFallback message="No tienes permisos para consultar contactos de movimientos." />
+          ),
+        }}
+      />
+    ),
   },
   {
     path: "movements/contacts/new",
-    element: <ProtectedRouteElement component={NewContact} />,
+    element: (
+      <ProtectedRouteElement
+        component={NewContact}
+        componentProps={{
+          requiredPermissions: [MOVEMENT_PERMISSIONS.create],
+          fallbackElement: (
+            <MovementPermissionFallback message="No tienes permisos para crear contactos." />
+          ),
+        }}
+      />
+    ),
   },
   {
     path: "movements/contacts/edit/:id",
-    element: <ProtectedRouteElement component={EditContact} />,
+    element: (
+      <ProtectedRouteElement
+        component={EditContact}
+        componentProps={{
+          requiredPermissions: [MOVEMENT_PERMISSIONS.edit],
+          fallbackElement: (
+            <MovementPermissionFallback message="No tienes permisos para editar contactos." />
+          ),
+        }}
+      />
+    ),
   },
   {
     path: "movements/venues",
-    element: <ProtectedRouteElement component={VenuesList} />,
+    element: (
+      <ProtectedRouteElement
+        component={VenuesList}
+        componentProps={{
+          requiredPermissions: [
+            MOVEMENT_PERMISSIONS.view,
+            MOVEMENT_PERMISSIONS.create,
+            MOVEMENT_PERMISSIONS.edit,
+            MOVEMENT_PERMISSIONS.delete,
+          ],
+          permissionMode: "some",
+          fallbackElement: (
+            <MovementPermissionFallback message="No tienes permisos para consultar sedes de movimientos." />
+          ),
+        }}
+      />
+    ),
   },
   {
     path: "movements/venues/new",
-    element: <ProtectedRouteElement component={NewVenue} />,
+    element: (
+      <ProtectedRouteElement
+        component={NewVenue}
+        componentProps={{
+          requiredPermissions: [MOVEMENT_PERMISSIONS.create],
+          fallbackElement: (
+            <MovementPermissionFallback message="No tienes permisos para crear sedes." />
+          ),
+        }}
+      />
+    ),
   },
   {
     path: "movements/venues/edit/:id",
-    element: <ProtectedRouteElement component={EditVenue} />,
+    element: (
+      <ProtectedRouteElement
+        component={EditVenue}
+        componentProps={{
+          requiredPermissions: [MOVEMENT_PERMISSIONS.edit],
+          fallbackElement: (
+            <MovementPermissionFallback message="No tienes permisos para editar sedes." />
+          ),
+        }}
+      />
+    ),
   },
   {
     path: "movements/exhibitions",
-    element: <ProtectedRouteElement component={ExhibitionsList} />,
+    element: (
+      <ProtectedRouteElement
+        component={ExhibitionsList}
+        componentProps={{
+          requiredPermissions: [
+            MOVEMENT_PERMISSIONS.view,
+            MOVEMENT_PERMISSIONS.create,
+            MOVEMENT_PERMISSIONS.edit,
+            MOVEMENT_PERMISSIONS.delete,
+          ],
+          permissionMode: "some",
+          fallbackElement: (
+            <MovementPermissionFallback message="No tienes permisos para consultar exposiciones de movimientos." />
+          ),
+        }}
+      />
+    ),
   },
   {
     path: "movements/exhibitions/new",
-    element: <ProtectedRouteElement component={NewExhibition} />,
+    element: (
+      <ProtectedRouteElement
+        component={NewExhibition}
+        componentProps={{
+          requiredPermissions: [MOVEMENT_PERMISSIONS.create],
+          fallbackElement: (
+            <MovementPermissionFallback message="No tienes permisos para crear exposiciones." />
+          ),
+        }}
+      />
+    ),
   },
   {
     path: "movements/exhibitions/edit/:id",
-    element: <ProtectedRouteElement component={EditExhibition} />,
+    element: (
+      <ProtectedRouteElement
+        component={EditExhibition}
+        componentProps={{
+          requiredPermissions: [MOVEMENT_PERMISSIONS.edit],
+          fallbackElement: (
+            <MovementPermissionFallback message="No tienes permisos para editar exposiciones." />
+          ),
+        }}
+      />
+    ),
   },
 ];

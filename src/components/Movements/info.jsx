@@ -23,6 +23,12 @@ import {
   API_UpdateMovementProrogation,
 } from "./APICalls";
 import SETTINGS from "../Config/settings";
+import {
+  canAuthorizeMovements,
+  canDeleteMovements,
+  canEditMovements,
+  canViewMovements,
+} from "./movementPermissions";
 
 moment.locale("es-mx");
 
@@ -247,7 +253,7 @@ const ProrogationDialog = ({
   </Dialog>
 );
 
-export const InfoMovement = ({ accessToken, refreshToken }) => {
+export const InfoMovement = ({ accessToken, refreshToken, permissions = [] }) => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
@@ -328,6 +334,14 @@ export const InfoMovement = ({ accessToken, refreshToken }) => {
     [movementInfo],
   );
   const isAuthorized = Boolean(movement?.authorized_by_movements);
+  const canEdit = canEditMovements(permissions);
+  const canAuthorize = canAuthorizeMovements(permissions);
+  const canInspect = [
+    canViewMovements(permissions),
+    canEdit,
+    canDeleteMovements(permissions),
+    canAuthorize,
+  ].some(Boolean);
 
   const summaryValues = useMemo(
     () => ({
@@ -534,9 +548,11 @@ export const InfoMovement = ({ accessToken, refreshToken }) => {
                 <Typography variant="subtitle1">
                   Fecha de devolución: {formatDate(prorogation.new_arrival_date)}
                 </Typography>
-                <Button onClick={() => openProrogationDialog(prorogation)}>
-                  Editar prórroga
-                </Button>
+                {canAuthorize ? (
+                  <Button onClick={() => openProrogationDialog(prorogation)}>
+                    Editar prórroga
+                  </Button>
+                ) : null}
               </Box>
               <div className="row">
                 <SummaryItem
@@ -556,7 +572,7 @@ export const InfoMovement = ({ accessToken, refreshToken }) => {
         )}
       </Paper>
 
-      {!isAuthorized ? (
+      {!isAuthorized && canAuthorize ? (
         <Paper sx={{ p: 2, mb: 2 }}>
           <Typography variant="body1" sx={{ mb: 2 }}>
             Antes de autorizar este movimiento verifique que toda la información
@@ -590,14 +606,18 @@ export const InfoMovement = ({ accessToken, refreshToken }) => {
             </Button>
           </Box>
         </Paper>
-      ) : (
+      ) : isAuthorized ? (
         <Alert severity="warning" sx={{ mb: 2 }}>
           El movimiento ha sido autorizado.
+        </Alert>
+      ) : (
+        <Alert severity="warning" sx={{ mb: 2 }}>
+          Ya se ha enviado una solicitud de autorización.
         </Alert>
       )}
 
       <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
-        {!isAuthorized ? (
+        {!isAuthorized && canEdit ? (
           <>
             <Button
               variant="outlined"
@@ -613,9 +633,11 @@ export const InfoMovement = ({ accessToken, refreshToken }) => {
             </Button>
           </>
         ) : null}
-        <Button variant="contained" onClick={() => navigate("/mnemosine/movements/manage")}>
-          Volver al listado
-        </Button>
+        {canInspect ? (
+          <Button variant="contained" onClick={() => navigate("/mnemosine/movements/manage")}>
+            Volver al listado
+          </Button>
+        ) : null}
       </Box>
 
       <ProrogationDialog

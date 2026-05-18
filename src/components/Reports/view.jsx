@@ -21,6 +21,7 @@ import PictureAsPdfOutlinedIcon from "@mui/icons-material/PictureAsPdfOutlined";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 
 import { API_RequestReportPreview } from "./api";
+import { canEditReports } from "./reportPermissions";
 import SETTINGS from "../Config/settings";
 
 const renderSelectType = (value) => {
@@ -41,7 +42,7 @@ export const ViewReport = ({ accessToken, refreshToken, permissions = [] }) => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const canEdit = useMemo(
-    () => permissions?.includes("editar_reportes"),
+    () => canEditReports(permissions),
     [permissions],
   );
 
@@ -91,9 +92,20 @@ export const ViewReport = ({ accessToken, refreshToken, permissions = [] }) => {
 
   const report = payload?.report || null;
   const pieces = payload?.pieces || [];
-  const previewColumns = payload?.columns || [];
-  const inventoryThumbnailBase =
-    SETTINGS.URL_ADDRESS.server_url + SETTINGS.URL_ADDRESS.inventory_thumbnails;
+
+  const previewColumns = useMemo(() => {
+    const seen = new Set();
+
+    return (payload?.columns || []).filter((column) => {
+      const columnId = String(column?.id || "").trim();
+      if (!columnId || seen.has(columnId)) {
+        return false;
+      }
+
+      seen.add(columnId);
+      return true;
+    });
+  }, [payload]);
 
   const tableRows = useMemo(
     () =>
@@ -225,10 +237,6 @@ export const ViewReport = ({ accessToken, refreshToken, permissions = [] }) => {
                           onChange={toggleAllPieces}
                         />
                       </TableCell>
-                      <TableCell>Foto inventario</TableCell>
-                      <TableCell>No. inventario</TableCell>
-                      <TableCell>No. catalogo</TableCell>
-                      <TableCell>No. procedencia</TableCell>
                       {previewColumns.map((column) => (
                         <TableCell key={column.id}>{column.label}</TableCell>
                       ))}
@@ -243,28 +251,6 @@ export const ViewReport = ({ accessToken, refreshToken, permissions = [] }) => {
                             onChange={() => togglePiece(String(piece._id || piece.id))}
                           />
                         </TableCell>
-                        <TableCell>
-                          {piece.inventory_photo_file_name ? (
-                            <Box
-                              component="img"
-                              src={`${inventoryThumbnailBase}${piece.inventory_photo_file_name}`}
-                              alt={piece.title || "Foto inventario"}
-                              sx={{
-                                width: 88,
-                                height: 88,
-                                objectFit: "contain",
-                                border: "1px solid #ddd",
-                                borderRadius: 1,
-                                backgroundColor: "#fff",
-                              }}
-                            />
-                          ) : (
-                            "N/D"
-                          )}
-                        </TableCell>
-                        <TableCell>{piece.inventory_number || "N/D"}</TableCell>
-                        <TableCell>{piece.catalog_number || "N/D"}</TableCell>
-                        <TableCell>{piece.origin_number || "N/D"}</TableCell>
                         {previewColumns.map((column) => {
                           const field = piece.fieldsMap?.[column.id];
                           if (!field) {

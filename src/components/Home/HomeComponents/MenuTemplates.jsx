@@ -9,6 +9,7 @@ import Logo from "../../../mnemo.svg";
 import {Button } from '@mui/material';
 
 import { getTranslations, setLanguage } from '../../Languages/i18n';
+import { canAccessReportsList } from "../../Reports/reportPermissions";
 //import 'bootstrap/dist/js/bootstrap.bundle';
 
 const langData = getTranslations();
@@ -87,7 +88,7 @@ export function TopNavBar({ user, permissions, handleLogout }) {
                                     </div>
                                     <ul className="dropdown-menu bg-info" aria-labelledby="navbarDropdownMenuLink">
                                         <li><Link to='/mnemosine/movements/manage' className="dropdown-item" >{langData.StartMenu.manage}</Link></li>
-                                        <li><Link to='/mnemosine/movements/loans' className="dropdown-item" >{langData.StartMenu.loans}</Link></li>
+                                        {/*<li><Link to='/mnemosine/movements/loans' className="dropdown-item" >{langData.StartMenu.loans}</Link></li>*/}
                                         {/*<li><Link to='/mnemosine/movements/search' className="dropdown-item" >{langData.StartMenu.search}</Link></li>*/}
                                         <li><Link to='/mnemosine/movements/institutions' className="dropdown-item" >{langData.StartMenu.institutions}</Link></li>
                                         <li><Link to='/mnemosine/movements/contacts' className="dropdown-item" >{langData.StartMenu.contacts}</Link></li>
@@ -100,7 +101,7 @@ export function TopNavBar({ user, permissions, handleLogout }) {
                             ) : null
                             }
 
-                            {permissions && permissions.includes('ver_reportes') ? (
+                            {canAccessReportsList(permissions) ? (
                                 <li className="nav-item">
                                     <Link to='/mnemosine/reports' className="nav-link text-white" >{langData.StartMenu.reports}</Link>
                                 </li>

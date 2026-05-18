@@ -9,10 +9,11 @@ import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 
 import { API_DeleteInstitution, API_RequestInstitutions } from "./api";
 import { CatalogTable } from "../shared/CatalogTable";
-
-const canCreate = (permissions) => permissions?.includes("agregar_movimientos");
-const canEdit = (permissions) => permissions?.includes("editar_movimientos");
-const canDelete = (permissions) => permissions?.includes("eliminar_movimientos");
+import {
+  canCreateMovements as canCreate,
+  canDeleteMovements as canDelete,
+  canEditMovements as canEdit,
+} from "../../Movements/movementPermissions";
 
 export const InstitutionsList = ({
   accessToken,

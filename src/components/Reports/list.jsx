@@ -7,11 +7,12 @@ import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 
 import { CatalogTable } from "../MovementsCatalogs/shared/CatalogTable";
 import { API_DeleteReport, API_RequestReports } from "./api";
-
-const canView = (permissions) => permissions?.includes("ver_reportes");
-const canCreate = (permissions) => permissions?.includes("agregar_reportes");
-const canEdit = (permissions) => permissions?.includes("editar_reportes");
-const canDelete = (permissions) => permissions?.includes("eliminar_reportes");
+import {
+  canCreateReports as canCreate,
+  canDeleteReports as canDelete,
+  canEditReports as canEdit,
+  canViewReports as canView,
+} from "./reportPermissions";
 
 const formatReportDate = (value, userName) => {
   if (!value) return "N/D";

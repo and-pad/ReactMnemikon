@@ -8,9 +8,24 @@ import isPropValid from "@emotion/is-prop-valid";
 import { API_RequestMovements } from "../../Movements/APICalls";
 import customStyles from "../datatableCustomCellStyle";
 import PiecesCell from "../../Movements/customDatatables";
+import {
+  canAuthorizeMovements,
+  canCreateMovements,
+  canDeleteMovements,
+  canEditMovements,
+  canViewMovements,
+} from "../../Movements/movementPermissions";
 
-const ActionsCell = ({ data }) => {
+const ActionsCell = ({ data, permissions = [] }) => {
   const navigate = useNavigate();
+  const canEdit = canEditMovements(permissions);
+  const canAuthorize = canAuthorizeMovements(permissions);
+  const canInspect = [
+    canViewMovements(permissions),
+    canEdit,
+    canDeleteMovements(permissions),
+    canAuthorize,
+  ].some(Boolean);
 
   const handleStep = (step) => {
     if (step === "edit") {
@@ -26,7 +41,7 @@ const ActionsCell = ({ data }) => {
 
   return (
     <div>
-      {data.authorized_by_movements ? null : (
+      {data.authorized_by_movements || !canEdit ? null : (
         <div style={{ display: "flex", gap: "5px" }}>
           <Button
             variant="contained"
@@ -47,7 +62,7 @@ const ActionsCell = ({ data }) => {
           </Button>
         </div>
       )}
-      {data.pieces ? (
+      {data.pieces && canInspect ? (
         <Button
           variant="contained"
           color="primary"
@@ -57,7 +72,7 @@ const ActionsCell = ({ data }) => {
         </Button>
       ) : null}
 
-      {data.authorized_by_movements ? (
+      {data.authorized_by_movements && canEdit ? (
         data.pieces_count > 0 ? (
           <Button
             variant="contained"
@@ -72,7 +87,15 @@ const ActionsCell = ({ data }) => {
   );
 };
 
-const columns_movements = [
+const getMovementColumns = (permissions = []) => {
+  const showActions = [
+    canViewMovements(permissions),
+    canEditMovements(permissions),
+    canDeleteMovements(permissions),
+    canAuthorizeMovements(permissions),
+  ].some(Boolean);
+
+  const columns = [
   {
     id: "id",
     name: "id",
@@ -113,14 +136,20 @@ const columns_movements = [
     selector: (row) => row["authorized_by_movements"],
     omit: true,
   },
-  {
-    id: "actions",
-    name: "Acciones",
-    cell: (row) => <ActionsCell data={row} />,
-  },
-];
+  ];
 
-export function MovementDatatable({ accessToken, refreshToken }) {
+  if (showActions) {
+    columns.push({
+      id: "actions",
+      name: "Acciones",
+      cell: (row) => <ActionsCell data={row} permissions={permissions} />,
+    });
+  }
+
+  return columns;
+};
+
+export function MovementDatatable({ accessToken, refreshToken, permissions = [] }) {
   const [totalRows, setTotalRows] = useState(0);
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -167,20 +196,24 @@ export function MovementDatatable({ accessToken, refreshToken }) {
     );
   }, [filterText]);
 
+  const columns = useMemo(() => getMovementColumns(permissions), [permissions]);
+
   return (
     <div className="container-fluid" style={{ width: "100%" }}>
-      <Button
-        variant="contained"
-        color="primary"
-        component={Link}
-        to="/mnemosine/movements/new"
-      >
-        Nuevo movimiento
-      </Button>
+      {canCreateMovements(permissions) ? (
+        <Button
+          variant="contained"
+          color="primary"
+          component={Link}
+          to="/mnemosine/movements/new"
+        >
+          Nuevo movimiento
+        </Button>
+      ) : null}
       <div>
         <StyleSheetManager shouldForwardProp={isPropValid}>
           <Datatable
-            columns={columns_movements}
+            columns={columns}
             data={Data}
             pagination
             paginationComponentOptions={{
