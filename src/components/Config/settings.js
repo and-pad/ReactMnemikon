@@ -1,11 +1,11 @@
-const ServerName =  "http://192.168.1.217/"; // 
+const ServerName =  "http://192.168.1.70/"; // 
 //const ServerName =  "https://and-pad.duckdns.org/"; 
 
 const SETTINGS = {
     URL_ADDRESS: {
         server_url: ServerName, //images documents and files
-        server_api_commands:"/api/", 
-//        server_api_commands: ServerName + 'api/',//
+    //    server_api_commands:"/api/", 
+        server_api_commands: 'http://192.168.1.70:8000/',//
         generate_word: 'authenticated/user_query/detail/word/',
 
         inventory_thumbnails: 'static/documents/public/inventario/fotosThumbnails/',
