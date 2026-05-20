@@ -9,24 +9,33 @@ const PrivateRoute = ({ element, checkLogin, ...rest }) => {
     const [loading, setLoading] = useState(true);
     /* En este effect hacemos el checkLogin, para verificar si nuestro usuario ya ingreso */
     useEffect(() => {
+        let isMounted = true;
+
         const checkAuth = async () => {
             try {
                 //hacemos la consulta, la respuesta es booleana
                 const response = await checkLogin();
                 //ponemos el valor del authenticated, para responder, o el elemento, o la redireccion
                 //console.log('respos', response);
-                setAuthenticated(response);
+                if (isMounted) {
+                    setAuthenticated(response);
+                }
             } catch (error) {//en caso de error
                 console.error('Error occurred while checking authentication:', error);
             } finally {
                 //cuando se recuelve el await, ponemos loading en false para que se resuelva la authenticación
-                setLoading(false);
+                if (isMounted) {
+                    setLoading(false);
+                }
             }
         };
         //Es necesario llamar a la funcion, y es necesario hacer una funcion para usar el metodo async await
         checkAuth();
         //esto es para monitorear la actividad de la función   
-    });
+        return () => {
+            isMounted = false;
+        };
+    }, []);
 
     if (loading) {
         return (<h6>Cargando...</h6>);

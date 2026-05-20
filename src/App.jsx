@@ -11,6 +11,7 @@ import "./App.css";
 import {
   handleLogin,
   handleLoggedTime,
+  clearTokens,
 } from "./components/LoginComponents/handleLogin"; // Importa la función handleLogin, todo lo referente al tokenizado
 
 import "@fortawesome/fontawesome-free/css/all.min.css"; //FontAwesome!!
@@ -74,30 +75,31 @@ function App() {
   }, []);
   //setForceUpdate(prevState => !prevState);
 
+  const clearAuthState = () => {
+    clearTokens();
+    Cookies.remove("accessToken");
+    Cookies.remove("refreshToken");
+    Cookies.remove("User");
+    Cookies.remove("permissions");
+    setAccessToken(null);
+    setRefreshToken(null);
+    setPermissions(null);
+    setUser(null);
+  };
+
   const helperLoginCallBack = (response) => {
     //console.log('respbef', response);
     //filtramos la respuesta, si viene access o time_left esta authenticado
     if (response === "not network2") {
       //si no hay internet o no responde el servidor igual quitamos las cookies de ingreso por seguridad
       //console.log('not network2');
-      Cookies.remove("accessToken");
-      Cookies.remove("refreshToken");
-      Cookies.remove("User");
-      Cookies.remove("permissions");
-      setAccessToken(null);
-      setRefreshToken(null);
-      setPermissions(null);
+      clearAuthState();
       return false;
     } else if (response === "login_redirect" || response === "not network1") {
       // Si llega login_redirect es porque ya no esta activo el usuario
       //borramos cookies
       //console.log('response', response);
-      setAccessToken(null);
-      setRefreshToken(null);
-      setPermissions(null);
-      Cookies.remove("accessToken");
-      Cookies.remove("refreshToken");
-      Cookies.remove("User");
+      clearAuthState();
       return false;
     } else if ("access" in response) {
       //Solo cambiamos la cookie access, que fue la que se renovo, las otras cookies siguen igual
@@ -111,6 +113,7 @@ function App() {
       return true;
     } else {
       //console.log('default', response);
+      clearAuthState();
       return false;
     }
   };
@@ -192,15 +195,7 @@ function App() {
       if (response === "login_redirect" || response === "not network") {
         //console.log('navigate');
         //console.log("cookiesRem");
-        Cookies.remove("accessToken");
-        Cookies.remove("refreshToken");
-        Cookies.remove("User");
-        // Forzar una actualización de la interfaz de usuario
-        //setForceUpdate(prevState => !prevState);
-        setAccessToken(null);
-        setRefreshToken(null);
-        setPermissions(null);
-        setUser(null);
+        clearAuthState();
 
         return;
       } else {
@@ -230,16 +225,8 @@ function App() {
 
   //const navigate = useNavigate();
   const handleLogout = async ({ navigate }) => {
-    Cookies.remove("accessToken");
-    Cookies.remove("refreshToken");
-    Cookies.remove("User");
+    clearAuthState();
     Cookies.remove("SYNCCODEDB");
-    // Forzar una actualización de la interfaz de usuario
-    //setForceUpdate(prevState => !prevState);
-    setAccessToken(null);
-    setRefreshToken(null);
-    setPermissions(null);
-    setUser(null);
 
     await handleDeleteCache();
     navigate("/login");

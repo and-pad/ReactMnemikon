@@ -11,13 +11,6 @@ function Login({ onLogin, setAccessToken, accessToken }) {
 
     const navigate = useNavigate();
 
-
-    useEffect(() => {
-        if (accessToken) {
-            navigate('/mnemosine/start');
-        }
-    }, [accessToken, navigate]);
-
     //Esta funcion se ejecuta cada que el campo email cambia (es precionada una tecla sobre el campo)
     const handleEmailChange = (e) => {
         setEmail(e.target.value);
