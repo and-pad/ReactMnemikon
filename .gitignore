@@ -52,3 +52,5 @@ coverage/
 
 # Test runner cache
 .vitest/
+# Config files
+settings.js
