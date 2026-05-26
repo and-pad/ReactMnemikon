@@ -16,6 +16,9 @@ import PictureAsPdfOutlinedIcon from "@mui/icons-material/PictureAsPdfOutlined";
 import SETTINGS from "../Config/settings";
 import { API_DownloadReportPdf, API_RequestReportPreview } from "./api";
 
+const getReportSelectionStorageKey = (reportId) =>
+  `report-preview-selection:${reportId}`;
+
 const renderSelectType = (value) => {
   if (value === "all") return "Todas";
   if (value === "all_except") return "Todas excepto";
@@ -32,10 +35,37 @@ export const ReportPdfPreview = ({ accessToken, refreshToken }) => {
   const [payload, setPayload] = useState(null);
 
   const selectedPieceIds = useMemo(() => {
-    const params = new URLSearchParams(location.search);
-    const rawIds = params.get("selected_piece_ids") || "";
-    return rawIds.split(",").map((item) => item.trim()).filter(Boolean);
-  }, [location.search]);
+    const stateIds = Array.isArray(location.state?.selectedPieceIds)
+      ? location.state.selectedPieceIds
+      : [];
+    if (stateIds.length) {
+      return stateIds.map((item) => String(item).trim()).filter(Boolean);
+    }
+
+    try {
+      const saved = sessionStorage.getItem(getReportSelectionStorageKey(id));
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length) {
+          return parsed.map((item) => String(item).trim()).filter(Boolean);
+        }
+      }
+    } catch (error) {
+      console.error("No fue posible recuperar la seleccion guardada del reporte", error);
+    }
+    return [];
+  }, [id, location.state]);
+
+  useEffect(() => {
+    try {
+      sessionStorage.setItem(
+        getReportSelectionStorageKey(id),
+        JSON.stringify(selectedPieceIds),
+      );
+    } catch (error) {
+      console.error("No fue posible guardar la seleccion del reporte", error);
+    }
+  }, [id, selectedPieceIds]);
 
   useEffect(() => {
     const loadPreview = async () => {
@@ -109,6 +139,10 @@ export const ReportPdfPreview = ({ accessToken, refreshToken }) => {
   }
 
   const { report, pieces = [] } = payload;
+  
+  const getFileName = (path) => {
+  return path.split("/").pop();
+};
 
   return (
     <Box sx={{ maxWidth: 1200, margin: "0 auto", padding: 2 }}>
@@ -133,7 +167,9 @@ export const ReportPdfPreview = ({ accessToken, refreshToken }) => {
                 variant="outlined"
                 startIcon={<ArrowBackOutlinedIcon />}
                 onClick={() =>
-                  navigate(`/mnemosine/reports/view/${id}?selected_piece_ids=${selectedPieceIds.join(",")}`)
+                  navigate(`/mnemosine/reports/view/${id}`, {
+                    state: { selectedPieceIds },
+                  })
                 }
               >
                 Volver
@@ -185,7 +221,11 @@ export const ReportPdfPreview = ({ accessToken, refreshToken }) => {
                         {field.preview_url ? (
                           <Box
                             component="img"
-                            src={SETTINGS.URL_ADDRESS.server_url + field.preview_url}
+                            src={
+                              SETTINGS.URL_ADDRESS.server_url +
+                              SETTINGS.URL_ADDRESS.inventory_thumbnails +
+                              getFileName(field.preview_url)
+                            }
                             alt={field.label}
                             sx={{
                               maxWidth: "100%",

@@ -24,6 +24,11 @@ import { API_RequestReportPreview } from "./api";
 import { canEditReports } from "./reportPermissions";
 import SETTINGS from "../Config/settings";
 
+const getReportSelectionStorageKey = (reportId) =>
+  `report-preview-selection:${reportId}`;
+
+const getFileName = (path = "") => path.split("/").pop();
+
 const renderSelectType = (value) => {
   if (value === "all") return "Todas";
   if (value === "all_except") return "Todas excepto";
@@ -46,13 +51,12 @@ export const ViewReport = ({ accessToken, refreshToken, permissions = [] }) => {
     [permissions],
   );
 
-  const selectedIdsFromQuery = useMemo(() => {
-    const params = new URLSearchParams(location.search);
-    return (params.get("selected_piece_ids") || "")
-      .split(",")
-      .map((item) => item.trim())
-      .filter(Boolean);
-  }, [location.search]);
+  const selectedIdsFromLocation = useMemo(() => {
+    const stateIds = Array.isArray(location.state?.selectedPieceIds)
+      ? location.state.selectedPieceIds
+      : [];
+    return stateIds.map((item) => String(item).trim()).filter(Boolean);
+  }, [location.state]);
 
   useEffect(() => {
     const loadReport = async () => {
@@ -73,21 +77,52 @@ export const ViewReport = ({ accessToken, refreshToken, permissions = [] }) => {
 
       setPayload(response);
       const allIds = (response?.pieces || []).map((piece) => String(piece._id || piece.id));
+      const persistedSelection = (() => {
+        try {
+          const saved = sessionStorage.getItem(getReportSelectionStorageKey(id));
+          if (!saved) {
+            return [];
+          }
+
+          const parsed = JSON.parse(saved);
+          return Array.isArray(parsed)
+            ? parsed.map((item) => String(item).trim()).filter(Boolean)
+            : [];
+        } catch (error) {
+          console.error("No fue posible recuperar la seleccion guardada del reporte", error);
+          return [];
+        }
+      })();
+      const preferredSelection = selectedIdsFromLocation.length
+        ? selectedIdsFromLocation
+        : persistedSelection;
+
       setSelectedPieceIds(
-        selectedIdsFromQuery.length
-          ? selectedIdsFromQuery.filter((pieceId) => allIds.includes(pieceId))
+        preferredSelection.length
+          ? preferredSelection.filter((pieceId) => allIds.includes(pieceId))
           : allIds,
       );
       setLoading(false);
     };
 
     loadReport();
-  }, [accessToken, refreshToken, id, selectedIdsFromQuery]);
+  }, [accessToken, refreshToken, id, selectedIdsFromLocation]);
+
+  useEffect(() => {
+    try {
+      sessionStorage.setItem(
+        getReportSelectionStorageKey(id),
+        JSON.stringify(selectedPieceIds),
+      );
+    } catch (error) {
+      console.error("No fue posible guardar la seleccion del reporte", error);
+    }
+  }, [id, selectedPieceIds]);
 
   const handlePreviewPdf = () => {
-    const params = new URLSearchParams();
-    params.set("selected_piece_ids", selectedPieceIds.join(","));
-    navigate(`/mnemosine/reports/view/${id}/pdf-preview?${params.toString()}`);
+    navigate(`/mnemosine/reports/view/${id}/pdf-preview`, {
+      state: { selectedPieceIds },
+    });
   };
 
   const report = payload?.report || null;
@@ -263,7 +298,9 @@ export const ViewReport = ({ accessToken, refreshToken, permissions = [] }) => {
                                 {field.preview_url ? (
                                   <Box
                                     component="img"
-                                    src={SETTINGS.URL_ADDRESS.server_url + field.preview_url}
+                                    src={ SETTINGS.URL_ADDRESS.server_url +
+                                      SETTINGS.URL_ADDRESS.inventory_thumbnails +
+                                      getFileName(field.preview_url) }
                                     alt={field.label}
                                     sx={{
                                       width: 88,

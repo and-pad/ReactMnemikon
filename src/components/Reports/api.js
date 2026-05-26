@@ -69,15 +69,19 @@ export const API_RequestReportPreview = async ({
   reportId,
   selectedPieceIds = [],
 }) => {
-  const params = new URLSearchParams();
-  if (selectedPieceIds.length) {
-    params.set("selected_piece_ids", selectedPieceIds.join(","));
-  }
   const url =
     SETTINGS.URL_ADDRESS.server_api_commands +
-    `authenticated/reports/${reportId}/preview/${params.toString() ? `?${params.toString()}` : ""}`;
+    `authenticated/reports/${reportId}/preview/`;
 
-  return requestWithAuth({ accessToken, refreshToken, url });
+  return requestWithAuth({
+    accessToken,
+    refreshToken,
+    url,
+    method: "POST",
+    payload: {
+      selected_piece_ids: selectedPieceIds,
+    },
+  });
 };
 
 export const API_CreateReport = async ({
@@ -139,19 +143,21 @@ export const API_DownloadReportPdf = async ({
   reportId,
   selectedPieceIds = [],
 }) => {
-  const params = new URLSearchParams();
-  if (selectedPieceIds.length) {
-    params.set("selected_piece_ids", selectedPieceIds.join(","));
-  }
   const url =
     SETTINGS.URL_ADDRESS.server_api_commands +
-    `authenticated/reports/${reportId}/pdf/${params.toString() ? `?${params.toString()}` : ""}`;
+    `authenticated/reports/${reportId}/pdf/`;
 
   try {
     const response = await fetchWithAuth(
       url,
       {
-        method: "GET",
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          selected_piece_ids: selectedPieceIds,
+        }),
       },
       { accessToken, refreshToken },
     );

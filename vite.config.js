@@ -8,11 +8,13 @@ export default defineConfig({
     host: '0.0.0.0',
     port: 3000,
 
+    allowedHosts: ['mnemikon.duckdns.org'],
+
     hmr: {
-    protocol: 'ws',
-    host: '192.168.1.217',
-    clientPort: 80
-  }
+      protocol: 'wss',
+      host: 'mnemikon.duckdns.org',
+      clientPort: 443
+    }
   },
 
   build: {

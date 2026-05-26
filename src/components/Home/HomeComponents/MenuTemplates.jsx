@@ -38,7 +38,7 @@ export function TopNavBar({ user, permissions, handleLogout }) {
                         alt="Logo"
                         style={{ height: "40px", width: "40px" }}
                         />
-                    <span className="navbar-brand text-dark" >Mnemosine</span>
+                    <span className="navbar-brand text-dark" >Mnemikon</span>
                     <Button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
                         <span className="navbar-toggler-icon"></span>
                     </Button>
