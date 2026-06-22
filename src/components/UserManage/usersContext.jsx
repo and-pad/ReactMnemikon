@@ -229,30 +229,26 @@ export const CreateUserForm = ({ accessToken, refreshToken }) => {
     NewName: "",
     NewEmail: "",
     NewPassword: "",
+    role: "",
   });
-  useEffect(() => {
-    setFormData({
-      ...formData,
-      role: 8,
-    });
-    /*console.log("ver", {
-      ...formData,
-      role: roles[0]?.name || ''
-    })*/
-  }, [formData]);
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    setFormData({
-      ...formData,
+    setFormData((previous) => ({
+      ...previous,
       [name]: value,
-    });
+    }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    handleNewUser({ formData });
+    handleNewUser({
+      formData: {
+        ...formData,
+        role: formData.role || roles[0]?.id || "",
+      },
+    });
   };
   const handleNewUser = async ({ formData }) => {
     try {
@@ -262,19 +258,21 @@ export const CreateUserForm = ({ accessToken, refreshToken }) => {
         console.log("Nuevo usuario agregado");
 
         // Aquí puedes volver a cargar los usuarios desde la API
-        fetchUsers(
+        await fetchUsers(
           setUserActiveData,
           setUserInactiveData,
           accessToken,
           refreshToken,
           setRoles
-        );
-        navigate("/mnemosine/administration/user_manage/user/users_active");
+        ).catch((error) => {
+          console.error("El usuario se creó, pero no se pudo actualizar el listado:", error);
+        });
+        navigate("../users_active", { replace: true });
       } else {
-        console.error("No se pudo inactivar el usuario.");
+        console.error("No se pudo crear el usuario.", data);
       }
     } catch (error) {
-      console.error("Error al inactivar el usuario:", error);
+      console.error("Error al crear el usuario:", error);
     }
   };
   const [showPassword, setShowPassword] = useState(false);
@@ -307,7 +305,7 @@ export const CreateUserForm = ({ accessToken, refreshToken }) => {
                 variant="outlined"
                 fullWidth
                 required
-                value={formData.name}
+                value={formData.NewName}
                 onChange={handleChange}
                 autoComplete="off"
               />
@@ -318,18 +316,18 @@ export const CreateUserForm = ({ accessToken, refreshToken }) => {
                 variant="filled"
                 fullWidth
                 required
-                value={formData.email}
+                value={formData.NewEmail}
                 onChange={handleChange}
                 autoComplete="off"
               />
               <TextField
                 label="Contraseña"
-                name="newPassword"
+                name="NewPassword"
                 type={showPassword ? "text" : "password"} // Cambia entre texto y contraseña
                 variant="filled"
                 fullWidth
                 required
-                value={formData.password}
+                value={formData.NewPassword}
                 onChange={handleChange}
                 slotProps={{
                   input: {
@@ -353,7 +351,7 @@ export const CreateUserForm = ({ accessToken, refreshToken }) => {
                 <Select
                   label="Rol"
                   name="role"
-                  value={formData.role || ""}
+                  value={formData.role || roles[0]?.id || ""}
                   onChange={handleChange}
                 >
                   {roles.map((role) => (

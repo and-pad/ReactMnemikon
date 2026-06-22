@@ -1,6 +1,6 @@
 import { useState, useEffect, useContext, createContext } from 'react';
 import { API_RequestUsers, API_InactiveUser, API_ActiveUser, API_DeleteUser } from './ApiCalls';
-import { Outlet, useNavigate, Link } from 'react-router-dom';
+import { Outlet, Link } from 'react-router-dom';
 import { Button, IconButton, Tooltip } from '@mui/material'; // Botón de Material UI
 import TransferWithinAStationRoundedIcon from '@mui/icons-material/TransferWithinAStationRounded';
 import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
@@ -11,7 +11,7 @@ import { toastShow } from '../LocalTools/tools';
 
 const DataContext = createContext();
 
-export function UsersNavBar({ refreshToken, accessToken }) {
+export function UsersNavBar() {
 
 
     return (
@@ -72,19 +72,15 @@ export function UsersNavBar({ refreshToken, accessToken }) {
                 {/* Botón para agregar usuario */}
                 <div style={{ marginRight: '50px' }}>
                     <Button
+                        component={Link}
+                        to="new_user"
                         variant="contained"
                         color="secondary"
                         size="small"
                         style={{ marginLeft: '1rem' }}
-
+                        className="text-white"
                     >
-                        <Link
-                            to="new_user"
-                            className="nav-link text-white"
-                            aria-current="page"
-                        >
-                            Agregar Usuario
-                        </Link>
+                        Agregar Usuario
                     </Button>
                 </div>
             </div>
@@ -93,17 +89,22 @@ export function UsersNavBar({ refreshToken, accessToken }) {
 }
 
 const fetchUsers = async (setUserActiveData, setUserInactiveData, accessToken, refreshToken, setRoles) => {
-    API_RequestUsers({ accessToken, refreshToken }).then((data) => {
+    try {
+        const data = await API_RequestUsers({ accessToken, refreshToken });
+        if (!data || !Array.isArray(data.users_active) || !Array.isArray(data.users_inactive)) {
+            throw new Error('Respuesta inválida al consultar usuarios');
+        }
         const { users_active, users_inactive, roles } = data;
 
         // Establecer los datos en los respectivos estados
         setUserActiveData(users_active);
         setUserInactiveData(users_inactive);
-        setRoles(roles);
-        console.log(data);
-
-
-    });
+        setRoles(Array.isArray(roles) ? roles : []);
+        return data;
+    } catch (error) {
+        console.error('Error al consultar usuarios:', error);
+        throw error;
+    }
 }
 
 
@@ -121,8 +122,9 @@ export function UserManageDataTable({ accessToken, refreshToken }) {
 */
 
     useEffect(() => {
-        fetchUsers(setUserActiveData, setUserInactiveData, accessToken, refreshToken, setRoles);
-    }, []);
+        fetchUsers(setUserActiveData, setUserInactiveData, accessToken, refreshToken, setRoles)
+            .catch(() => {});
+    }, [accessToken, refreshToken]);
 
     const columns_active_users = [
         {
@@ -217,7 +219,7 @@ export function UserManageDataTable({ accessToken, refreshToken }) {
         <>
             <DataContext.Provider value={{ userActiveData, userInactiveData, columns_active_users, columns_inactive_users, setUserActiveData, setUserInactiveData, fetchUsers, setRoles, roles }}>
             <ToastContainer autoClose={3000} position="bottom-right" />
-                <UsersNavBar accessToken={accessToken} refreshToken={refreshToken} />
+                <UsersNavBar />
 
                 <Outlet />
 
@@ -392,9 +394,6 @@ const UsersActions = ({ row, setUserActiveData, setUserInactiveData, accessToken
     const _id = row._id
 
     // console.log("row", _id);
-    const navigate = useNavigate();
-
-
     return (
         <>
             <div >
@@ -484,4 +483,3 @@ const UserActiveModal = ({ row, setUserActiveData, setUserInactiveData, accessTo
 }
 
 export const useData = () => useContext(DataContext);
-

@@ -1,0 +1,258 @@
+.museum-login {
+    position: relative;
+    min-height: 100vh;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 48px clamp(24px, 7vw, 96px);
+    color: #eef7f3;
+    background: #060807;
+    isolation: isolate;
+}
+
+.museum-login__slider,
+.museum-login__slide,
+.museum-login__slide-image,
+.museum-login__shade {
+    position: absolute;
+    inset: 0;
+}
+
+.museum-login__slider {
+    z-index: 0;
+    background: #050706;
+}
+
+.museum-login__slide {
+    opacity: 0;
+    transform: scale(1.02);
+    transition: opacity 1600ms ease, transform 6800ms ease;
+}
+
+.museum-login__slide--active {
+    opacity: 1;
+    transform: scale(1.08);
+}
+
+.museum-login__slide-image {
+    background-position: center;
+    background-size: cover;
+    filter: saturate(0.86) contrast(1.08);
+}
+
+.museum-login__slide--ascii .museum-login__slide-image {
+    filter: saturate(1.18) contrast(1.28) brightness(1.08);
+    image-rendering: auto;
+}
+
+.museum-login__shade {
+    z-index: 2;
+    background:
+        radial-gradient(circle at 50% 26%, rgba(111, 210, 176, 0.16), transparent 34%),
+        linear-gradient(180deg, rgba(5, 7, 6, 0.28), rgba(5, 7, 6, 0.76)),
+        linear-gradient(90deg, rgba(5, 7, 6, 0.68), rgba(5, 7, 6, 0.46), rgba(5, 7, 6, 0.68));
+}
+
+.museum-login__content {
+    position: relative;
+    z-index: 3;
+    width: min(100%, 420px);
+    display: grid;
+    align-items: center;
+}
+
+.museum-login__panel-header,
+.museum-login__field label {
+    font-family: "Courier New", Courier, monospace;
+    letter-spacing: 0;
+}
+
+.museum-login__panel {
+    position: relative;
+    padding: clamp(26px, 4vw, 38px);
+    border: 1px solid rgba(203, 255, 229, 0.24);
+    border-radius: 24px;
+    background:
+        linear-gradient(145deg, rgba(12, 20, 18, 0.72), rgba(8, 12, 12, 0.58)),
+        rgba(255, 255, 255, 0.08);
+    box-shadow: 0 28px 80px rgba(0, 0, 0, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.16);
+    backdrop-filter: blur(22px);
+}
+
+.museum-login__panel::before {
+    content: "";
+    position: absolute;
+    inset: 14px;
+    border: 1px solid rgba(146, 246, 201, 0.11);
+    border-radius: 18px;
+    pointer-events: none;
+}
+
+.museum-login__panel-header {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 28px;
+    color: rgba(146, 246, 201, 0.9);
+    font-size: 0.76rem;
+    font-weight: 700;
+}
+
+.museum-login__status {
+    display: flex;
+    gap: 7px;
+}
+
+.museum-login__dot {
+    width: 20px;
+    height: 3px;
+    border-radius: 999px;
+    background: rgba(238, 247, 243, 0.26);
+    transition: background 260ms ease, width 260ms ease;
+}
+
+.museum-login__dot--active {
+    width: 32px;
+    background: #92f6c9;
+    box-shadow: 0 0 14px rgba(146, 246, 201, 0.65);
+}
+
+.museum-login__panel h2 {
+    position: relative;
+    z-index: 1;
+    margin: 0 0 22px;
+    color: #f7fff8;
+    font-family: "Courier New", Courier, monospace;
+    font-size: clamp(1.7rem, 3vw, 2.25rem);
+    letter-spacing: 0;
+}
+
+.museum-login__error {
+    position: relative;
+    z-index: 1;
+    margin-bottom: 18px;
+    padding: 12px 14px;
+    border: 1px solid rgba(255, 121, 121, 0.42);
+    border-radius: 12px;
+    color: #ffd2d2;
+    background: rgba(106, 24, 24, 0.32);
+}
+
+.museum-login__form,
+.museum-login__field {
+    position: relative;
+    z-index: 1;
+    display: grid;
+}
+
+.museum-login__form {
+    gap: 18px;
+}
+
+.museum-login__field {
+    gap: 8px;
+}
+
+.museum-login__field label {
+    color: rgba(238, 247, 243, 0.72);
+    font-size: 0.82rem;
+    font-weight: 700;
+}
+
+.museum-login__field input {
+    width: 100%;
+    min-height: 48px;
+    box-sizing: border-box;
+    border: 1px solid rgba(203, 255, 229, 0.2);
+    border-radius: 14px;
+    padding: 0 15px;
+    color: #f7fff8;
+    background: rgba(2, 6, 5, 0.5);
+    outline: none;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    transition: border-color 180ms ease, box-shadow 180ms ease, background 180ms ease;
+}
+
+.museum-login__field input:focus {
+    border-color: rgba(146, 246, 201, 0.82);
+    background: rgba(3, 12, 10, 0.68);
+    box-shadow: 0 0 0 4px rgba(146, 246, 201, 0.12);
+}
+
+.museum-login__button {
+    min-height: 50px;
+    margin-top: 4px;
+    border: 0;
+    border-radius: 14px;
+    color: #04100c;
+    background: linear-gradient(135deg, #c7ffe1, #6de0ba 48%, #8cc7ff);
+    font-family: "Courier New", Courier, monospace;
+    font-size: 0.96rem;
+    font-weight: 800;
+    letter-spacing: 0;
+    cursor: pointer;
+    box-shadow: 0 14px 34px rgba(109, 224, 186, 0.25);
+    transition: transform 180ms ease, box-shadow 180ms ease, filter 180ms ease;
+}
+
+.museum-login__button:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.04);
+    box-shadow: 0 18px 42px rgba(109, 224, 186, 0.34);
+}
+
+.museum-login__button:active {
+    transform: translateY(0);
+}
+
+@media (max-width: 920px) {
+    .museum-login {
+        padding: 40px 22px;
+    }
+
+    .museum-login__content {
+        width: min(100%, 520px);
+    }
+
+    .museum-login__shade {
+        background:
+            radial-gradient(circle at 50% 22%, rgba(111, 210, 176, 0.2), transparent 34%),
+            linear-gradient(180deg, rgba(5, 7, 6, 0.52), rgba(5, 7, 6, 0.84));
+    }
+}
+
+@media (max-width: 620px) {
+    .museum-login {
+        min-height: 100svh;
+        padding: 22px 16px;
+    }
+
+
+    .museum-login__content {
+        width: 100%;
+        grid-template-columns: 1fr;
+    }
+
+    .museum-login__panel {
+        padding: 24px;
+        border-radius: 20px;
+    }
+
+    .museum-login__panel-header {
+        margin-bottom: 22px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .museum-login__slide,
+    .museum-login__dot,
+    .museum-login__field input,
+    .museum-login__button {
+        animation: none;
+        transition: none;
+    }
+}

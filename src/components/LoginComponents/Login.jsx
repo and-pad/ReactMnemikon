@@ -1,13 +1,49 @@
 import Cookies from 'js-cookie';
 import { useNavigate } from "react-router-dom";
 import React, { useState, useEffect } from 'react';
+import './Login.css';
+import background1 from '../../LoginImages/background-1.jpg';
+import background1Ascii from '../../LoginImages/background-1-ascii.jpg';
+import background2 from '../../LoginImages/background-2.jpg';
+import background2Ascii from '../../LoginImages/background-2-ascii.jpg';
+import background3 from '../../LoginImages/background-3.jpg';
+import background3Ascii from '../../LoginImages/background-3-ascii.jpg';
+import background4 from '../../LoginImages/background-4.jpg';
+import background4Ascii from '../../LoginImages/background-4-ascii.jpg';
+import background5 from '../../LoginImages/background-5.jpg';
+import background5Ascii from '../../LoginImages/background-5-ascii.jpg';
 //import { Navigate } from 'react-router-dom';
 //onLogin y setAccess ambas son funciones
+
+const archiveSlides = [
+    { image: background1, label: 'background-1', type: 'photo' },
+    { image: background1Ascii, label: 'background-1-ascii', type: 'ascii' },
+    { image: background2, label: 'background-2', type: 'photo' },
+    { image: background2Ascii, label: 'background-2-ascii', type: 'ascii' },
+    { image: background3, label: 'background-3', type: 'photo' },
+    { image: background3Ascii, label: 'background-3-ascii', type: 'ascii' },
+    { image: background4, label: 'background-4', type: 'photo' },
+    { image: background4Ascii, label: 'background-4-ascii', type: 'ascii' },
+    { image: background5, label: 'background-5', type: 'photo' },
+    { image: background5Ascii, label: 'background-5-ascii', type: 'ascii' },
+];
+
+const getRandomSlide = (currentSlideIndex) => {
+    let nextSlideIndex = currentSlideIndex;
+
+    while (nextSlideIndex === currentSlideIndex) {
+        nextSlideIndex = Math.floor(Math.random() * archiveSlides.length);
+    }
+
+    return nextSlideIndex;
+};
+
 function Login({ onLogin, setAccessToken, accessToken }) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');    
     const [redirect, setRedirect] = useState(false);
+    const [currentSlide, setCurrentSlide] = useState(() => getRandomSlide(-1));
 
     const navigate = useNavigate();
 
@@ -95,22 +131,62 @@ function Login({ onLogin, setAccessToken, accessToken }) {
             navigate('/mnemosine/start');
         }
     }, [redirect, navigate]);
+
+    // Slider visual aleatorio del archivo digital; no interviene en la autenticacion.
+    useEffect(() => {
+        const sliderTimer = setInterval(() => {
+            setCurrentSlide((slideIndex) => getRandomSlide(slideIndex));
+        }, 6800);
+
+        return () => clearInterval(sliderTimer);
+    }, []);
+
     return (
-        <div>
-            <h2>Ingreso</h2>
-            {/* Mostrar el mensaje de error si existe */}
-            {error && <div style={{ color: 'red' }}>{error}</div>}
-            <form onSubmit={handleSubmit}>
-                <div>
-                    <label>Email:</label>
-                    <input type="text" value={email} onChange={handleEmailChange} />
+        <div className="museum-login">
+            <div className="museum-login__slider" aria-hidden="true">
+                {archiveSlides.map((slide, index) => (
+                    <div
+                        className={`museum-login__slide museum-login__slide--${slide.type} ${index === currentSlide ? 'museum-login__slide--active' : ''}`}
+                        key={slide.label}
+                    >
+                        <div
+                            className="museum-login__slide-image"
+                            style={{ backgroundImage: `url(${slide.image})` }}
+                        />
+                    </div>
+                ))}
+                <div className="museum-login__shade" />
+            </div>
+
+            <section className="museum-login__content">
+                <div className="museum-login__panel">
+                    <div className="museum-login__panel-header">
+                        <span>ACCESS CONSOLE</span>
+                        <div className="museum-login__status">
+                            {archiveSlides.map((slide, index) => (
+                                <span
+                                    className={`museum-login__dot ${index === currentSlide ? 'museum-login__dot--active' : ''}`}
+                                    key={slide.label}
+                                />
+                            ))}
+                        </div>
+                    </div>
+                    <h2>Ingreso</h2>
+                    {/* Mostrar el mensaje de error si existe */}
+                    {error && <div className="museum-login__error">{error}</div>}
+                    <form className="museum-login__form" onSubmit={handleSubmit}>
+                        <div className="museum-login__field">
+                            <label>Email:</label>
+                            <input type="text" value={email} onChange={handleEmailChange} />
+                        </div>
+                        <div className="museum-login__field">
+                            <label>Password:</label>
+                            <input type="password" value={password} onChange={handlePasswordChange} />
+                        </div>
+                        <button className="museum-login__button" type="submit">Login</button>
+                    </form>
                 </div>
-                <div>
-                    <label>Password:</label>
-                    <input type="password" value={password} onChange={handlePasswordChange} />
-                </div>
-                <button type="submit">Login</button>
-            </form>
+            </section>
             <div>{}</div>
         </div>
     );
