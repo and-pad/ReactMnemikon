@@ -190,7 +190,8 @@ export const EditInventory = ({ accessToken, refreshToken, permissions }) => {
           newValue: modified[key],
         };
       }
-    }
+    }   
+
 
     return changes;
   };

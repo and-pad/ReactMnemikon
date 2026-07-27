@@ -1,15 +1,20 @@
-//const ServerName =  "http://10.10.0.2/"; //
-const ServerName =  "http://192.168.1.70/"; //
-/*const ServerName =
+
+const ServerName =  "http://localhost:3000/"; //you ip and port, in development mode, in production mode, it will be the domain name of the server, for example: https://mnemikon.duckdns.org/
+const ServerName =
   typeof window !== "undefined"
     ? `${window.location.origin}/`
-    : "https://mnemikon.duckdns.org/";*/
+    : "https://mnemikon.duckdns.org/";
 
 const SETTINGS = {
     URL_ADDRESS: {
         server_url: ServerName, //images documents and files
+        
+        // you ip and port, in development mode, in production mode, 
+        // it will be the domain name of the server, for example if you have a server:
+        //  https://mnemikon.duckdns.org/ then it will be just:/api/
+        //
         //server_api_commands:"/api/", 
-        server_api_commands: 'http://localhost:8000/',//
+        server_api_commands: 'http://localhost:8000/',
         generate_word: 'authenticated/user_query/detail/word/',
 
         inventory_thumbnails: 'static/documents/public/inventario/fotosThumbnails/',
