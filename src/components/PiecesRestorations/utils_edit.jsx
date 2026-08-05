@@ -2,7 +2,7 @@
 import SETTINGS from "../Config/settings";
 import { getActualLang, getTranslations } from "../Languages/i18n";
 import moment from "../LocalTools/moment";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { useRouteContext } from "../../routes/RouteContext";
 import {
   canDeleteRestoration,

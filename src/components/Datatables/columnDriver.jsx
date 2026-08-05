@@ -1,6 +1,6 @@
 //import langData from '../Languages/en/Lang';
 import SETTINGS from "../Config/settings";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { useRouteContext } from "../../routes/RouteContext";
 import {
     canDeleteInventory,

@@ -1,5 +1,5 @@
 //import { useEffect } from 'react';
-import { Link, Outlet, useNavigate } from 'react-router-dom';
+import { Link, Outlet, useNavigate } from 'react-router';
 //import langData from '../../Languages/en/Lang';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import './MenuTemplates.css'; // Asegúrate de importar los estilos CSS

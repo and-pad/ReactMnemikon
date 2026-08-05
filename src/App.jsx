@@ -1,6 +1,6 @@
 import Cookies from "js-cookie"; //Librería para el manejo de cookies
 import { useState, useEffect } from "react"; //react, y sus componentes
-import { RouterProvider } from "react-router-dom"; //Componentes de rutas de react de single page
+import { RouterProvider } from "react-router"; //Componentes de rutas de react de single page
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min";

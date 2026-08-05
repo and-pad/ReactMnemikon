@@ -1,5 +1,5 @@
 import Cookies from 'js-cookie';
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import React, { useState, useEffect } from 'react';
 import './Login.css';
 import background1 from '../../LoginImages/background-1.jpg';
@@ -12,7 +12,7 @@ import background4 from '../../LoginImages/background-4.jpg';
 import background4Ascii from '../../LoginImages/background-4-ascii.jpg';
 import background5 from '../../LoginImages/background-5.jpg';
 import background5Ascii from '../../LoginImages/background-5-ascii.jpg';
-//import { Navigate } from 'react-router-dom';
+//import { Navigate } from 'react-router';
 //onLogin y setAccess ambas son funciones
 
 const archiveSlides = [

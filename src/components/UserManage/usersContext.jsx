@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router";
 import { useData } from "./Users";
 import Datatable from "react-data-table-component";
 //import InventoryOutlinedIcon from '@mui/icons-material/InventoryOutlined';

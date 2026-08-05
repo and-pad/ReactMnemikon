@@ -26,7 +26,7 @@ import { ExpandableComponent } from "./DatatableComponents/datatableComponents";
 import customStyles from "./datatableCustomCellStyle";
 import { ConstructElementsToHide, formatData } from "./dataHandler";
 import { useSessionStorageState } from "./DatatableComponents/SessionStorage";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { getTranslations } from "../Languages/i18n";
 import {
   loadDatatableSnapshot,
@@ -153,7 +153,7 @@ function resolveColumnState(baseColumns, module, size, storageKey = COLUMN_STORA
   };
 }
 
-//import { useNavigate } from "react-router-dom";
+//import { useNavigate } from "react-router";
 //
 
 export const BaseDatatable = ({

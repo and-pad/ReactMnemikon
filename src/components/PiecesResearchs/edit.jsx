@@ -1,6 +1,6 @@
 import { useEffect, useState ,useRef } from "react";
-import { useParams } from "react-router-dom";
-//import { useNavigate } from "react-router-dom";
+import { useParams } from "react-router";
+//import { useNavigate } from "react-router";
 import { useDataResearch } from "./researchsActions";
 import { API_UpdateResearch } from "./APICalls";
 import { getTranslations } from "../Languages/i18n";

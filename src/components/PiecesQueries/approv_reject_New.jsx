@@ -2,7 +2,7 @@ import moment from "../LocalTools/moment";
 import 'moment/locale/es-mx'; // Importa el paquete de locales dentro de moment
 
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import {
   API_RequestPendingList,
   API_SendNewApprovralDecision,

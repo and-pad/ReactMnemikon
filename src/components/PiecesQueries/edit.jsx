@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { useData } from "./inventoryActions";
 import { getTranslations } from "../Languages/i18n";
 import { API_RequestInventoryEdit } from "./APICalls";

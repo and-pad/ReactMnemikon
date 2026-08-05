@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router";
 import { Box, Typography, Button } from "@mui/material";
 import InventoryTwoToneIcon from "@mui/icons-material/InventoryTwoTone";
 import Datatable from "react-data-table-component";

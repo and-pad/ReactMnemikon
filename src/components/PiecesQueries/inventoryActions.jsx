@@ -1,4 +1,4 @@
-import { useParams, Outlet } from "react-router-dom";
+import { useParams, Outlet } from "react-router";
 import { createContext, useContext, useState, useEffect } from "react";
 
 import { fetchInventoryEdit, fetchNewInventory } from "./APICalls";

@@ -1,6 +1,6 @@
 import { useState, useEffect, useContext, createContext } from 'react';
 import { API_RequestUsers, API_InactiveUser, API_ActiveUser, API_DeleteUser } from './ApiCalls';
-import { Outlet, Link } from 'react-router-dom';
+import { Outlet, Link } from 'react-router';
 import { Button, IconButton, Tooltip } from '@mui/material'; // Botón de Material UI
 import TransferWithinAStationRoundedIcon from '@mui/icons-material/TransferWithinAStationRounded';
 import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';

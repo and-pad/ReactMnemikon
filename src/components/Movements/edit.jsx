@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useParams } from "react-router";
 import { MovementFormPage } from "./MovementForm";
 
 export const EditMovement = ({ accessToken, refreshToken }) => {

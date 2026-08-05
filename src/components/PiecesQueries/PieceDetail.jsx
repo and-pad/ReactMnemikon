@@ -1,4 +1,4 @@
-import { useParams, Link, Outlet, useNavigate } from 'react-router-dom';
+import { useParams, Link, Outlet, useNavigate } from 'react-router';
 import { useEffect, useState, createContext, useContext } from 'react';
 import { Carousel } from 'react-bootstrap';
 import SETTINGS from '../Config/settings';

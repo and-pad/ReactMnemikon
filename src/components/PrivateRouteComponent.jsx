@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate } from 'react-router';
 
 const PrivateRoute = ({ element, checkLogin, ...rest }) => {
     //estado para saber si esta ya loggeado en el sistema

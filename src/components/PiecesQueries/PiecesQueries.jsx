@@ -1,4 +1,4 @@
-//import { Navigate } from 'react-router-dom';
+//import { Navigate } from 'react-router';
 import { DatatableUserInventory } from '../Datatables/DatatablesInventory';//Componente 
 import { DatatableUserQuery } from '../Datatables/DatatablesQuery';
 // Datatable de Consultas
