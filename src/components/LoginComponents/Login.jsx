@@ -102,10 +102,10 @@ function Login({ onLogin, setAccessToken, accessToken }) {
                         Cookies.set('User', JSON.stringify(response.user));
                        
                         setRedirect(true);
-                    } /*else {                       
+                    } else {
                         setAccessToken(response.access);
                         setRedirect(true);
-                    }*/
+                    }
 
                 }
                 else if ('time_left' in response) {
