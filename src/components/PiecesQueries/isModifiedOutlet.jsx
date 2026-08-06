@@ -68,7 +68,6 @@ const ModifiedOutlet = ({ Data, accessToken, refreshToken, setIsModified }) => {
 
   const handleApprovalDecision = (isApproved) => {
     const ID = Data.piece_id;
-    var data;
     if (ID !== undefined) {
       API_SendApprovralDecision({
         accessToken,
@@ -76,7 +75,7 @@ const ModifiedOutlet = ({ Data, accessToken, refreshToken, setIsModified }) => {
         ID,
         isApproved,
       }).then((response) => {
-        if (response.ok) {
+        if (response && !response.error) {
           setIsModified(false);
         }
       });
