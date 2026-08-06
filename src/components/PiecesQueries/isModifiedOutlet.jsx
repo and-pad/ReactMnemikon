@@ -9,7 +9,8 @@ import {
 } from "../LocalTools/tools";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBan } from "@fortawesome/free-solid-svg-icons";
-import { useNavigate, useState } from "react";
+import { useState } from "react";
+import { useNavigate } from "react-router";
 import { API_SendApprovralDecision } from "./APICalls";
 import "./ismodified.css";
 
