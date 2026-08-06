@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+set -e
+
+read -r -p "Mensaje del commit: " MENSAJE
+
+if [[ -z "$MENSAJE" ]]; then
+    echo "El mensaje no puede estar vacío."
+    exit 1
+fi
+
+echo "Agregando archivos..."
+git add .
+
+echo "Creando commit..."
+git commit -m "$MENSAJE"
+
+echo "Enviando cambios a origin/main..."
+git push origin main
+
+echo "Todo terminó correctamente."

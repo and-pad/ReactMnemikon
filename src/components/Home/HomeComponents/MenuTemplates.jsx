@@ -7,7 +7,6 @@ import './MenuTemplates.css'; // Asegúrate de importar los estilos CSS
 //import "bootstrap/dist/js/bootstrap.bundle.min";
 import Logo from "../../../mnemo.svg";
 import {Button } from '@mui/material';
-import Dropdown from 'bootstrap/js/dist/dropdown';
 
 import { getTranslations, setLanguage } from '../../Languages/i18n';
 import { canAccessReportsList } from "../../Reports/reportPermissions";
@@ -27,14 +26,18 @@ export function TopNavBar({ user, permissions, handleLogout }) {
     const navigate = useNavigate();
 
     const closeAdministrationMenu = (event) => {
-        const administrationItem = event.currentTarget.closest('.navbar-nav > .nav-item.dropdown');
-        const administrationToggle = administrationItem?.querySelector(':scope > a[data-bs-toggle="dropdown"]');
+        const administrationItem = event.currentTarget.closest(".navbar-nav > .nav-item.dropdown");
 
-        if (administrationToggle) {
-            Dropdown.getInstance(administrationToggle)?.hide();
-        }
+        if (!administrationItem) return;
+
+        administrationItem.querySelectorAll(".dropdown-menu").forEach((menu) => {
+            menu.classList.remove("show");
+        });
+        administrationItem.querySelectorAll('[data-bs-toggle="dropdown"]').forEach((toggle) => {
+            toggle.classList.remove("show");
+            toggle.setAttribute("aria-expanded", "false");
+        });
     };
-
 
     // Manejar los dropdowns anidados
 
