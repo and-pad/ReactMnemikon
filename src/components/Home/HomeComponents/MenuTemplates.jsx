@@ -7,6 +7,7 @@ import './MenuTemplates.css'; // Asegúrate de importar los estilos CSS
 //import "bootstrap/dist/js/bootstrap.bundle.min";
 import Logo from "../../../mnemo.svg";
 import {Button } from '@mui/material';
+import Dropdown from 'bootstrap/js/dist/dropdown';
 
 import { getTranslations, setLanguage } from '../../Languages/i18n';
 import { canAccessReportsList } from "../../Reports/reportPermissions";
@@ -24,6 +25,15 @@ export function TopNavBar({ user, permissions, handleLogout }) {
     //console.log(permissions, 'permissions');
 
     const navigate = useNavigate();
+
+    const closeAdministrationMenu = (event) => {
+        const administrationItem = event.currentTarget.closest('.navbar-nav > .nav-item.dropdown');
+        const administrationToggle = administrationItem?.querySelector(':scope > a[data-bs-toggle="dropdown"]');
+
+        if (administrationToggle) {
+            Dropdown.getInstance(administrationToggle)?.hide();
+        }
+    };
 
 
     // Manejar los dropdowns anidados
@@ -108,12 +118,12 @@ export function TopNavBar({ user, permissions, handleLogout }) {
                             ) : null
                             }
 
-                            {permissions && permissions.includes('ver_avaluos') ? (
+                            { /* permissions && permissions.includes('ver_avaluos') ? (
                                 <li className="nav-item">
                                     <Link to='/mnemosine/appraisals' className="nav-link text-white" >{langData.StartMenu.appraisals}</Link>
                                 </li>
                             ) : null
-                            }
+                            */}
 
                             <li className="nav-item dropdown" >
                                 <div className="nav-link dropdown-toggle text-white " id="navbarDropdownLang" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -154,6 +164,7 @@ export function TopNavBar({ user, permissions, handleLogout }) {
                                                                 <Link
                                                                     to="/mnemosine/administration/user_manage/user"
                                                                     className="dropdown-item"
+                                                                    onClick={closeAdministrationMenu}
                                                                 >
                                                                     {langData.StartMenu.manage}
                                                                 </Link>
@@ -170,6 +181,7 @@ export function TopNavBar({ user, permissions, handleLogout }) {
                                                                 <Link
                                                                     to="/mnemosine/administration/user_manage/roles"
                                                                     className="dropdown-item"
+                                                                    onClick={closeAdministrationMenu}
                                                                 >
                                                                     {langData.StartMenu.roles}
                                                                 </Link>
@@ -210,12 +222,12 @@ export function TopNavBar({ user, permissions, handleLogout }) {
                                                 </div>
                                                 <ul className="dropdown-menu bg-info" aria-labelledby="navbarDropdownCatalogs">
                                                     <li className="dropdown-item">
-                                                        <Link to="/mnemosine/administration/catalogs_manage" className="dropdown-item">
+                                                        <Link to="/mnemosine/administration/catalogs_manage" className="dropdown-item" onClick={closeAdministrationMenu}>
                                                             <i className="nav-icon fa fa-cogs"></i> {langData.StartMenu.manage}
                                                         </Link>
                                                     </li>
                                                     <li className="dropdown-item">
-                                                        <Link to="/mnemosine/administration/catalog_genders" className="dropdown-item">
+                                                        <Link to="/mnemosine/administration/catalog_genders" className="dropdown-item" onClick={closeAdministrationMenu}>
                                                             <i className="nav-icon icon-layers"></i> {langData.StartMenu.genders}
                                                         </Link>
                                                     </li>
