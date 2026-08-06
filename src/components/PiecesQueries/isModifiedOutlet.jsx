@@ -11,6 +11,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBan } from "@fortawesome/free-solid-svg-icons";
 import { useState } from "react";
 import { useNavigate } from "react-router";
+import {
+  Button as MuiButton,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+} from "@mui/material";
 import { API_SendApprovralDecision } from "./APICalls";
 import "./ismodified.css";
 
@@ -31,6 +38,7 @@ const ModifiedOutlet = ({ Data, accessToken, refreshToken, setIsModified }) => {
   const [newImgSizes, setNewImgSizes] = useState({});
   const [oldImgSizes, setOldImgSizes] = useState({});
   const [changedImgSizes, setChangedImgSizes] = useState({});
+  const [pendingDecision, setPendingDecision] = useState(null);
 
   const handleNewImgSizeClick = (index) => {
     setNewImgSizes((prevSizes) => {
@@ -69,8 +77,13 @@ const ModifiedOutlet = ({ Data, accessToken, refreshToken, setIsModified }) => {
   };
 
   const handleApprovalDecision = (isApproved) => {
+    setPendingDecision(isApproved);
+  };
+
+  const confirmApprovalDecision = () => {
+    const isApproved = pendingDecision;
     const ID = Data.piece_id;
-    if (ID !== undefined) {
+    if (ID !== undefined && pendingDecision !== null) {
       API_SendApprovralDecision({
         accessToken,
         refreshToken,
@@ -78,6 +91,7 @@ const ModifiedOutlet = ({ Data, accessToken, refreshToken, setIsModified }) => {
         isApproved,
       }).then((response) => {
         if (response && !response.error) {
+          setPendingDecision(null);
           setIsModified(false);
           navigate("/mnemosine/inventory_queries", { replace: true });
         }
@@ -495,6 +509,33 @@ const visibleFieldChanges = Object.entries(Data || {}).filter(([key]) => {
           Descartar cambios
         </button>
       </div>
+      <Dialog
+        open={pendingDecision !== null}
+        onClose={() => setPendingDecision(null)}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle>
+          {pendingDecision ? "¿Aprobar cambios?" : "¿Rechazar cambios?"}
+        </DialogTitle>
+        <DialogContent>
+          {pendingDecision
+            ? "La modificación se aplicará a la pieza."
+            : "La modificación será descartada y no se aplicará a la pieza."}
+        </DialogContent>
+        <DialogActions>
+          <MuiButton onClick={() => setPendingDecision(null)}>
+            Cancelar
+          </MuiButton>
+          <MuiButton
+            variant="contained"
+            color={pendingDecision ? "primary" : "error"}
+            onClick={confirmApprovalDecision}
+          >
+            {pendingDecision ? "Sí, aprobar" : "Sí, rechazar"}
+          </MuiButton>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };
