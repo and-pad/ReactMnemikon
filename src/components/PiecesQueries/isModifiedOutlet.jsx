@@ -9,7 +9,7 @@ import {
 } from "../LocalTools/tools";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBan } from "@fortawesome/free-solid-svg-icons";
-import { useState } from "react";
+import { useNavigate, useState } from "react";
 import { API_SendApprovralDecision } from "./APICalls";
 import "./ismodified.css";
 
@@ -26,6 +26,7 @@ const docs_path =
 const langData = getTranslations();
 
 const ModifiedOutlet = ({ Data, accessToken, refreshToken, setIsModified }) => {
+  const navigate = useNavigate();
   const [newImgSizes, setNewImgSizes] = useState({});
   const [oldImgSizes, setOldImgSizes] = useState({});
   const [changedImgSizes, setChangedImgSizes] = useState({});
@@ -77,6 +78,7 @@ const ModifiedOutlet = ({ Data, accessToken, refreshToken, setIsModified }) => {
       }).then((response) => {
         if (response && !response.error) {
           setIsModified(false);
+          navigate("/mnemosine/inventory_queries", { replace: true });
         }
       });
       //console.log(data);
