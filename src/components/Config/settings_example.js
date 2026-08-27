@@ -1,5 +1,5 @@
 
-const ServerName =  "http://localhost:3000/"; //you ip and port, in development mode, in production mode, it will be the domain name of the server, for example: https://mnemikon.duckdns.org/
+//const ServerName =  "http://localhost:3000/"; //you ip and port, in development mode, in production mode, it will be the domain name of the server, for example: https://mnemikon.duckdns.org/
 const ServerName =
   typeof window !== "undefined"
     ? `${window.location.origin}/`
